@@ -73,59 +73,71 @@ function renderTable(scheduleData, filter = "today") {
     const weekNumber = getWeekNumberISO(dayDateObj);
     const { monday: weekStart, sunday: weekEnd } = getWeekRange(dayDateObj);
 
-    if (filter === "semester") {
-      if (currentWeek !== weekNumber) {
-        currentWeek = weekNumber;
-        const trSep = document.createElement("tr");
-        trSep.className = "week-separator";
-        trSep.innerHTML = `<td colspan="6">Неделя ${weekNumber} (${formatDateShort(
-          weekStart
-        )} – ${formatDateShort(weekEnd)})</td>`;
-        tbody.appendChild(trSep);
-      }
+    const items = scheduleData[day];
+    const visibleItems = items.filter((item) => {
+      if (filter === "today")
+        return dayDateObj.toDateString() === today.toDateString();
+      if (filter === "week")
+        return dayDateObj >= monday && dayDateObj <= sunday;
+      if (filter === "semester") return true;
+      return false;
+    });
+
+    if (visibleItems.length === 0) continue;
+
+    if (filter === "semester" && currentWeek !== weekNumber) {
+      currentWeek = weekNumber;
+      const trSep = document.createElement("tr");
+      trSep.className = "week-separator";
+      trSep.innerHTML = `<td colspan="6">Неделя ${weekNumber} (${formatDateShort(
+        weekStart
+      )} – ${formatDateShort(weekEnd)})</td>`;
+      tbody.appendChild(trSep);
     }
 
-    for (const item of scheduleData[day]) {
-      let tr = document.createElement("tr");
+    visibleItems.forEach((item, index) => {
+      const tr = document.createElement("tr");
       let rowClass = "other";
 
-      if (filter === "today") {
-        if (dayDateObj.toDateString() !== today.toDateString()) continue;
+      if (dayDateObj.toDateString() === today.toDateString()) {
         rowClass = "today";
-      } else if (filter === "week") {
-        if (dayDateObj < monday || dayDateObj > sunday) continue;
-        if (dayDateObj.toDateString() === today.toDateString()) {
-          rowClass = "today";
-        } else if (dayDateObj < today) {
-          rowClass = "done";
-        } else {
-          rowClass = "week";
-        }
-      } else if (filter === "semester") {
-        if (dayDateObj.toDateString() === today.toDateString()) {
-          rowClass = "today";
-        } else if (dayDateObj < today) {
-          rowClass = "done";
-        } else {
-          rowClass = "week";
-        }
+      } else if (dayDateObj < today) {
+        rowClass = "done";
+      } else if (filter === "week" || filter === "semester") {
+        rowClass = "week";
       }
 
       tr.className = rowClass;
-      tr.innerHTML = `
-              <td>${day}</td>
-              <td>${item["Пара"]}</td>
-              <td>${item["Вид занятий"]}</td>
-              <td>${item["Дисциплина"]}</td>
-              <td>${item["Преподаватель"]}</td>
-              <td>${
-                item["Ссылка"]
-                  ? `<a href="${item["Ссылка"]}" target="_blank">Ссылка</a>`
-                  : ""
-              }</td>
-            `;
+
+      if (index === 0) {
+        tr.innerHTML = `
+          <td rowspan="${visibleItems.length}">${day}</td>
+          <td>${item["Пара"]}</td>
+          <td>${item["Вид занятий"]}</td>
+          <td>${item["Дисциплина"]}</td>
+          <td>${item["Преподаватель"]}</td>
+          <td>${
+            item["Ссылка"]
+              ? `<a href="${item["Ссылка"]}" target="_blank">Ссылка</a>`
+              : ""
+          }</td>
+        `;
+      } else {
+        tr.innerHTML = `
+          <td>${item["Пара"]}</td>
+          <td>${item["Вид занятий"]}</td>
+          <td>${item["Дисциплина"]}</td>
+          <td>${item["Преподаватель"]}</td>
+          <td>${
+            item["Ссылка"]
+              ? `<a href="${item["Ссылка"]}" target="_blank">Ссылка</a>`
+              : ""
+          }</td>
+        `;
+      }
+
       tbody.appendChild(tr);
-    }
+    });
   }
 }
 
