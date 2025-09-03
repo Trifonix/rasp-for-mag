@@ -53,6 +53,21 @@ function formatDateShort(d) {
     .replace(/\//g, ".");
 }
 
+const style = document.createElement("style");
+style.innerHTML = `
+  @keyframes blink {
+    0% { background-color: orange; }
+    10% { background-color: whitesmoke; }
+    60% { background-color: orange; }
+    90% { background-color: whitesmoke; }
+    100% { background-color: orange; }
+  }
+  tr.active {
+    animation: blink 2s infinite;
+  }
+`;
+document.head.appendChild(style);
+
 function renderTable(scheduleData, filter = "today") {
   tbody.innerHTML = "";
   const today = new Date();
@@ -139,7 +154,40 @@ function renderTable(scheduleData, filter = "today") {
       tbody.appendChild(tr);
     });
   }
+
+  highlightCurrentLesson();
 }
+
+function highlightCurrentLesson() {
+  const now = new Date();
+  document.querySelectorAll("#schedule-body tr").forEach((tr) => {
+    let timeCell = Array.from(tr.children).find(td =>
+      /\d{2}:\d{2}-\d{2}:\d{2}/.test(td.textContent)
+    );
+    if (!timeCell) return;
+
+    const match = timeCell.textContent.match(/(\d{2}:\d{2})-(\d{2}:\d{2})/);
+    if (!match) return;
+
+    const [_, start, end] = match;
+    const [startH, startM] = start.split(":").map(Number);
+    const [endH, endM] = end.split(":").map(Number);
+
+    const startTime = new Date();
+    startTime.setHours(startH, startM - 10, 0, 0);
+
+    const endTime = new Date();
+    endTime.setHours(endH, endM + 5, 0, 0);
+
+    if (now >= startTime && now <= endTime) {
+      tr.classList.add("active");
+    } else {
+      tr.classList.remove("active");
+    }
+  });
+}
+
+setInterval(highlightCurrentLesson, 1000);
 
 fetch("schedule.json")
   .then((response) => response.json())
