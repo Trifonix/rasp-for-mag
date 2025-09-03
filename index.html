@@ -4,47 +4,16 @@
     <meta charset="UTF-8" />
     <title>Расписание ПИ ХГПУ</title>
     <link type="Image/x-icon" href="fav.ico" rel="icon" />
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 20px;
-      }
-      table {
-        width: 100%;
-      }
-      th {
-        text-align: center;
-        font-size: 0.8em;
-      }
-      th, td {
-        border: 1px solid #ccc;
-        padding: 8px;
-      }
-      th {
-        background-color: #f0f0f0;
-      }
-      tr.today {
-        background-color: #ffbfa6;
-        font-weight: bold;
-      }
-      tr.week {
-        background-color: #eceafb;
-        color: darkslategrey;
-      }
-      tr.done {
-        background-color: #e6ffe9;
-        color: grey;
-      }
-      .controls {
-        margin: 2em 0;
-      }
-      .controls label {
-        margin-right: 1em;
-        padding: 1em;
-        background-color: lightcyan;
-        border-radius: 1em;
-      }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js" defer></script>
   </head>
   <body>
     <h1>Расписание занятий</h1>
@@ -71,103 +40,5 @@
       </thead>
       <tbody id="schedule-body"></tbody>
     </table>
-
-    <script>
-      const tbody = document.getElementById("schedule-body");
-
-      function parseDateObj(str) {
-        const match = str.match(/\d{2}\.\d{2}\.\d{4}/);
-        if (!match) return null;
-        const [d, m, y] = match[0].split(".");
-        return new Date(`${y}-${m}-${d}`);
-      }
-
-      function sortScheduleByDate(schedule) {
-        const entries = Object.entries(schedule);
-        entries.sort(([keyA], [keyB]) => {
-          const dateA = parseDateObj(keyA);
-          const dateB = parseDateObj(keyB);
-          return dateA - dateB;
-        });
-        return Object.fromEntries(entries);
-      }
-
-      function renderTable(scheduleData, filter = "today") {
-        tbody.innerHTML = "";
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const dayOfWeek = today.getDay() || 7;
-        const monday = new Date(today);
-        monday.setDate(today.getDate() - dayOfWeek + 1);
-        const sunday = new Date(monday);
-        sunday.setDate(monday.getDate() + 6);
-
-        for (const day in scheduleData) {
-          const dayDateObj = parseDateObj(day);
-          if (!dayDateObj) continue;
-
-          for (const item of scheduleData[day]) {
-            let tr = document.createElement("tr");
-            let rowClass = "other";
-
-            if (filter === "today") {
-              if (dayDateObj.toDateString() !== today.toDateString()) {
-                continue;
-              }
-              rowClass = "today";
-            } else if (filter === "week") {
-              if (dayDateObj < monday || dayDateObj > sunday) {
-                continue;
-              }
-              if (dayDateObj.toDateString() === today.toDateString()) {
-                rowClass = "today";
-              } else if (dayDateObj < today) {
-                rowClass = "done";
-              } else {
-                rowClass = "week";
-              }
-            } else if (filter === "semester") {
-              if (dayDateObj.toDateString() === today.toDateString()) {
-                rowClass = "today";
-              } else if (dayDateObj < today) {
-                rowClass = "done";
-              } else {
-                rowClass = "week";
-              }
-            }
-
-            tr.className = rowClass;
-            tr.innerHTML = `
-              <td>${day}</td>
-              <td>${item["Пара"]}</td>
-              <td>${item["Вид занятий"]}</td>
-              <td>${item["Дисциплина"]}</td>
-              <td>${item["Преподаватель"]}</td>
-              <td>${
-                item["Ссылка"]
-                  ? `<a href="${item["Ссылка"]}" target="_blank">Ссылка</a>`
-                  : ""
-              }</td>
-            `;
-            tbody.appendChild(tr);
-          }
-        }
-      }
-
-      fetch("schedule.json")
-        .then((response) => response.json())
-        .then((data) => {
-          window.scheduleData = sortScheduleByDate(data);
-          renderTable(window.scheduleData, "today");
-        })
-        .catch((err) => console.error("Ошибка загрузки JSON:", err));
-
-      document.querySelectorAll('input[name="view"]').forEach((radio) => {
-        radio.addEventListener("change", () => {
-          renderTable(window.scheduleData, radio.value);
-        });
-      });
-    </script>
   </body>
 </html>
