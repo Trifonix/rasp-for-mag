@@ -3,14 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <title>Расписание ПИ ХГПУ</title>
-    <link type="Image/x-icon" href="fav.ico" rel="icon">
+    <link type="Image/x-icon" href="fav.ico" rel="icon" />
     <style>
       body {
         font-family: Arial, sans-serif;
         margin: 20px;
       }
       table {
-        border-collapse: collapse;
         width: 100%;
       }
       th,
@@ -23,20 +22,25 @@
         background-color: #f0f0f0;
       }
       tr.today {
-        background-color: #f9cc88;
+        background-color: #ffbfa6;
         font-weight: bold;
       }
       tr.week {
-        background-color: #ddfbe1;
+        background-color: #eceafb;
+        color: darkslategrey;
       }
-      tr.other {
-        background-color: #f1fff2;
+      tr.done {
+        background-color: #e6ffe9;
+        color: grey;
       }
       .controls {
-        margin-bottom: 15px;
+        margin: 2em 0;
       }
       .controls label {
-        margin-right: 15px;
+        margin-right: 1em;
+        padding: 1em;
+        background-color: lightcyan;
+        border-radius: 1em;
       }
     </style>
   </head>
@@ -77,14 +81,12 @@
       }
 
       function sortScheduleByDate(schedule) {
-      const entries = Object.entries(schedule);
-
-      entries.sort(([keyA], [keyB]) => {
-        const dateA = new Date(keyA.slice(6, 10), keyA.slice(3, 5) - 1, keyA.slice(0, 2));
-        const dateB = new Date(keyB.slice(6, 10), keyB.slice(3, 5) - 1, keyB.slice(0, 2));
-        return dateA - dateB;
-      });
-
+        const entries = Object.entries(schedule);
+        entries.sort(([keyA], [keyB]) => {
+          const dateA = parseDateObj(keyA);
+          const dateB = parseDateObj(keyB);
+          return dateA - dateB;
+        });
         return Object.fromEntries(entries);
       }
 
@@ -101,39 +103,50 @@
 
         for (const day in scheduleData) {
           const dayDateObj = parseDateObj(day);
+          if (!dayDateObj) continue;
+
           for (const item of scheduleData[day]) {
             let tr = document.createElement("tr");
             let rowClass = "other";
 
-            if (
-              dayDateObj &&
-              dayDateObj.toDateString() === today.toDateString()
-            ) {
+            if (filter === "today") {
+              if (dayDateObj.toDateString() !== today.toDateString()) {
+                continue;
+              }
               rowClass = "today";
-            } else if (filter === "week" && dayDateObj) {
-              if (dayDateObj >= monday && dayDateObj <= sunday) {
+            } else if (filter === "week") {
+              if (dayDateObj < monday || dayDateObj > sunday) {
+                continue;
+              }
+              if (dayDateObj.toDateString() === today.toDateString()) {
+                rowClass = "today";
+              } else if (dayDateObj < today) {
+                rowClass = "done";
+              } else {
                 rowClass = "week";
-              } else continue;
-            } else if (
-              filter === "today" &&
-              (!dayDateObj ||
-                dayDateObj.toDateString() !== today.toDateString())
-            ) {
-              continue;
+              }
+            } else if (filter === "semester") {
+              if (dayDateObj.toDateString() === today.toDateString()) {
+                rowClass = "today";
+              } else if (dayDateObj < today) {
+                rowClass = "done";
+              } else {
+                rowClass = "week";
+              }
             }
 
             tr.className = rowClass;
             tr.innerHTML = `
-                <td>${day}</td>
-                <td>${item["Пара"]}</td>
-                <td>${item["Вид занятий"]}</td>
-                <td>${item["Дисциплина"]}</td>
-                <td>${item["Преподаватель"]}</td>
-                <td>${
-                  item["Ссылка"]
-                    ? `<a href="${item["Ссылка"]}" target="_blank">Ссылка</a>`
-                    : ""
-                }</td>
+              <td>${day}</td>
+              <td>${item["Пара"]}</td>
+              <td>${item["Вид занятий"]}</td>
+              <td>${item["Дисциплина"]}</td>
+              <td>${item["Преподаватель"]}</td>
+              <td>${
+                item["Ссылка"]
+                  ? `<a href="${item["Ссылка"]}" target="_blank">Ссылка</a>`
+                  : ""
+              }</td>
             `;
             tbody.appendChild(tr);
           }
@@ -144,7 +157,7 @@
         .then((response) => response.json())
         .then((data) => {
           window.scheduleData = sortScheduleByDate(data);
-          renderTable(data, "today");
+          renderTable(window.scheduleData, "today");
         })
         .catch((err) => console.error("Ошибка загрузки JSON:", err));
 
@@ -156,5 +169,3 @@
     </script>
   </body>
 </html>
-
-
