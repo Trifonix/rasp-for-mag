@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Расписание ПИ ХГПУ</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      th,
+      td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #f0f0f0;
+      }
+      tr.today {
+        background-color: #f9cc88;
+        font-weight: bold;
+      }
+      tr.week {
+        background-color: #ddfbe1;
+      }
+      tr.other {
+        background-color: #f1fff2;
+      }
+      .controls {
+        margin-bottom: 15px;
+      }
+      .controls label {
+        margin-right: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Расписание занятий</h1>
+    <h3>1 курс ОФО маг-р 12-25 РПм Программная инженерия</h3>
+
+    <div class="controls">
+      <label
+        ><input type="radio" name="view" value="today" checked /> Сегодня</label
+      >
+      <label><input type="radio" name="view" value="week" /> Эта неделя</label>
+      <label><input type="radio" name="view" value="semester" /> Семестр</label>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Дни недели</th>
+          <th>Пара</th>
+          <th>Вид занятий</th>
+          <th>Дисциплина</th>
+          <th>Преподаватель</th>
+          <th>Ссылка</th>
+        </tr>
+      </thead>
+      <tbody id="schedule-body"></tbody>
+    </table>
+
+    <script>
+      const tbody = document.getElementById("schedule-body");
+
+      function parseDateObj(str) {
+        const match = str.match(/\d{2}\.\d{2}\.\d{4}/);
+        if (!match) return null;
+        const [d, m, y] = match[0].split(".");
+        return new Date(`${y}-${m}-${d}`);
+      }
+
+      function renderTable(scheduleData, filter = "today") {
+        tbody.innerHTML = "";
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const dayOfWeek = today.getDay() || 7;
+        const monday = new Date(today);
+        monday.setDate(today.getDate() - dayOfWeek + 1);
+        const sunday = new Date(monday);
+        sunday.setDate(monday.getDate() + 6);
+
+        for (const day in scheduleData) {
+          const dayDateObj = parseDateObj(day);
+          for (const item of scheduleData[day]) {
+            let tr = document.createElement("tr");
+            let rowClass = "other";
+
+            if (
+              dayDateObj &&
+              dayDateObj.toDateString() === today.toDateString()
+            ) {
+              rowClass = "today";
+            } else if (filter === "week" && dayDateObj) {
+              if (dayDateObj >= monday && dayDateObj <= sunday) {
+                rowClass = "week";
+              } else continue;
+            } else if (
+              filter === "today" &&
+              (!dayDateObj ||
+                dayDateObj.toDateString() !== today.toDateString())
+            ) {
+              continue;
+            }
+
+            tr.className = rowClass;
+            tr.innerHTML = `
+                <td>${day}</td>
+                <td>${item["Пара"]}</td>
+                <td>${item["Вид занятий"]}</td>
+                <td>${item["Дисциплина"]}</td>
+                <td>${item["Преподаватель"]}</td>
+                <td>${
+                  item["Ссылка"]
+                    ? `<a href="${item["Ссылка"]}" target="_blank">Ссылка</a>`
+                    : ""
+                }</td>
+            `;
+            tbody.appendChild(tr);
+          }
+        }
+      }
+
+      fetch("schedule.json")
+        .then((response) => response.json())
+        .then((data) => {
+          window.scheduleData = data;
+          renderTable(data, "today");
+        })
+        .catch((err) => console.error("Ошибка загрузки JSON:", err));
+
+      document.querySelectorAll('input[name="view"]').forEach((radio) => {
+        radio.addEventListener("change", () => {
+          renderTable(window.scheduleData, radio.value);
+        });
+      });
+    </script>
+  </body>
+</html>
