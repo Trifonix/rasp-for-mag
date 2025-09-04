@@ -160,7 +160,26 @@ function renderTable(scheduleData, filter = "today") {
 
 function highlightCurrentLesson() {
   const now = new Date();
+  const todayStr = now.toDateString();
+
   document.querySelectorAll("#schedule-body tr").forEach((tr) => {
+    let dateCell = tr.children[0]?.textContent;
+    let dayDateObj = parseDateObj(dateCell || "");
+
+    if (!dayDateObj) {
+      let prevRow = tr.previousElementSibling;
+      while (prevRow && !dayDateObj) {
+        dateCell = prevRow.children[0]?.textContent;
+        dayDateObj = parseDateObj(dateCell || "");
+        prevRow = prevRow.previousElementSibling;
+      }
+    }
+
+    if (!dayDateObj || dayDateObj.toDateString() !== todayStr) {
+      tr.classList.remove("active");
+      return;
+    }
+
     let timeCell = Array.from(tr.children).find(td =>
       /\d{2}:\d{2}-\d{2}:\d{2}/.test(td.textContent)
     );
