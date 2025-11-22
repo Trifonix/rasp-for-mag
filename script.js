@@ -125,6 +125,10 @@ function renderTable(scheduleData, filter = "today") {
       tr.className = rowClass;
 
       if (index === 0) {
+        tr.classList.add("day-group-start");
+      }
+
+      if (index === 0) {
         tr.innerHTML = `
           <td rowspan="${visibleItems.length}">${day}</td>
           <td>${item["Пара"]}</td>
@@ -180,7 +184,7 @@ function highlightCurrentLesson() {
       return;
     }
 
-    let timeCell = Array.from(tr.children).find(td =>
+    let timeCell = Array.from(tr.children).find((td) =>
       /\d{2}:\d{2}-\d{2}:\d{2}/.test(td.textContent)
     );
     if (!timeCell) return;

@@ -47,3 +47,6 @@ tr.week-separator td {
   background-color: lightcyan;
   border-radius: 1em;
 }
+.day-group-start td {
+  border-top: 2px solid #999 !important;
+}
