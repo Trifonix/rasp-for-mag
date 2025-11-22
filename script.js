@@ -197,10 +197,10 @@ function highlightCurrentLesson() {
     const [endH, endM] = end.split(":").map(Number);
 
     const startTime = new Date();
-    startTime.setHours(startH, startM - 10, 0, 0);
+    startTime.setHours(startH, startM - 9, 0, 0);
 
     const endTime = new Date();
-    endTime.setHours(endH, endM + 5, 0, 0);
+    endTime.setHours(endH, endM + 1, 0, 0);
 
     if (now >= startTime && now <= endTime) {
       tr.classList.add("active");
