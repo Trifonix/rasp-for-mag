@@ -1,44 +1,45 @@
 <!DOCTYPE html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Расписание ПИ ХГПУ</title>
-    <link type="Image/x-icon" href="fav.ico" rel="icon" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="style.css" />
-    <script src="script.js" defer></script>
-  </head>
-  <body>
-    <h1>Расписание занятий</h1>
-    <h3>1 курс ОФО маг-р 12-25 РПм Программная инженерия</h3>
 
-    <div class="controls">
-      <label
-        ><input type="radio" name="view" value="today" checked /> Сегодня</label
-      >
-      <label><input type="radio" name="view" value="week" /> Эта неделя</label>
-      <label><input type="radio" name="view" value="semester" /> Семестр</label>
-    </div>
+<head>
+  <meta charset="UTF-8" />
+  <title>Расписание ПИ ХГПУ</title>
+  <link type="Image/x-icon" href="fav.ico" rel="icon" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="script.js" defer></script>
+</head>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Дни недели</th>
-          <th>Пара</th>
-          <th>Вид занятий</th>
-          <th>Дисциплина</th>
-          <th>Преподаватель</th>
-          <th>Ссылка</th>
-        </tr>
-      </thead>
-      <tbody id="schedule-body"></tbody>
-    </table>
-  </body>
+<body>
+  <h1>Расписание занятий</h1>
+  <h3>1 курс ОФО маг-р 12-25 РПм Программная инженерия</h3>
+
+  <div class="controls">
+    <label><input type="radio" name="view" value="today" checked /> Сегодня</label>
+    <label><input type="radio" name="view" value="week" /> Эта неделя</label>
+    <label><input type="radio" name="view" value="semester1-1" /> Сессия 1</label>
+    <label><input type="radio" name="view" value="semester" /> Семестр 1</label>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Дни недели</th>
+        <th>Пара</th>
+        <th>Вид занятий</th>
+        <th>Дисциплина</th>
+        <th>Преподаватель</th>
+        <th>Ссылка</th>
+      </tr>
+    </thead>
+    <tbody id="schedule-body"></tbody>
+  </table>
+</body>
+
 </html>

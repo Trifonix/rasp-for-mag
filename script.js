@@ -1,5 +1,8 @@
 const tbody = document.getElementById("schedule-body");
 
+let scheduleSemester = null;
+let scheduleSemester11 = null;
+
 function parseDateObj(str) {
   const match = str.match(/\d{2}\.\d{2}\.\d{4}/);
   if (!match) return null;
@@ -212,16 +215,49 @@ function highlightCurrentLesson() {
 
 setInterval(highlightCurrentLesson, 1000);
 
+function mergeSchedules(a, b) {
+  const result = {};
+
+  [a, b].forEach((schedule) => {
+    if (!schedule) return;
+
+    for (const day in schedule) {
+      if (!result[day]) {
+        result[day] = [...schedule[day]];
+      } else {
+        result[day] = result[day].concat(schedule[day]);
+      }
+    }
+  });
+
+  return sortScheduleByDate(result);
+}
+
 fetch("schedule.json")
-  .then((response) => response.json())
+  .then((r) => r.json())
   .then((data) => {
-    window.scheduleData = sortScheduleByDate(data);
-    renderTable(window.scheduleData, "today");
-  })
-  .catch((err) => console.error("Ошибка загрузки JSON:", err));
+    scheduleSemester = sortScheduleByDate(data);
+    renderTable(scheduleSemester, "today");
+  });
+
+fetch("schedule1-1.json")
+  .then((r) => r.json())
+  .then((data) => {
+    scheduleSemester11 = sortScheduleByDate(data);
+  });
 
 document.querySelectorAll('input[name="view"]').forEach((radio) => {
   radio.addEventListener("change", () => {
-    renderTable(window.scheduleData, radio.value);
+    if (radio.value === "semester1-1") {
+      renderTable(scheduleSemester11, "semester");
+    } else if (radio.value === "semester") {
+      renderTable(scheduleSemester, "semester");
+    } else {
+      const merged = mergeSchedules(
+        scheduleSemester,
+        scheduleSemester11
+      );
+      renderTable(merged, radio.value);
+    }
   });
 });

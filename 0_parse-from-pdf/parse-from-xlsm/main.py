@@ -80,7 +80,7 @@ def normalize_day(day_text):
 
 try:
     df = pd.read_excel(
-        "0_parse-from-pdf/parse-from-xlsm/new.xlsm", 
+        "0_parse-from-pdf/parse-from-xlsm/new.xlsx", 
         header=10, 
         converters={'Дни недели': str, 'Дни недели.1': str}
     )
