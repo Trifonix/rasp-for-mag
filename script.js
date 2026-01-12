@@ -1,3 +1,33 @@
+const loader = document.getElementById("loader");
+const table = document.querySelector("table");
+
+// Сначала прячем таблицу
+table.style.display = "none";
+
+// Загружаем оба JSON
+Promise.all([
+  fetch("schedule.json").then(r => r.json()),
+  fetch("schedule1-1.json").then(r => r.json())
+])
+.then(([dataMain, data11]) => {
+  scheduleSemester = sortScheduleByDate(dataMain);
+  scheduleSemester11 = sortScheduleByDate(data11);
+
+  const merged = mergeSchedules(scheduleSemester, scheduleSemester11);
+
+  // Рендерим таблицу только после полной подготовки данных
+  renderTable(merged, "today");
+
+  // Скрываем loader и показываем таблицу
+  loader.style.display = "none";
+  table.style.display = "";
+})
+.catch(err => {
+  loader.textContent = "Ошибка загрузки данных...";
+  console.error(err);
+});
+
+
 const tbody = document.getElementById("schedule-body");
 
 let scheduleSemester = null;
