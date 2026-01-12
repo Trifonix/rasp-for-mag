@@ -233,18 +233,22 @@ function mergeSchedules(a, b) {
   return sortScheduleByDate(result);
 }
 
-fetch("schedule.json")
-  .then((r) => r.json())
-  .then((data) => {
-    scheduleSemester = sortScheduleByDate(data);
-    renderTable(scheduleSemester, "today");
-  });
+Promise.all([
+  fetch("schedule.json").then(r => r.json()),
+  fetch("schedule1-1.json").then(r => r.json())
+])
+.then(([dataMain, data11]) => {
+  // Сохраняем по отдельности
+  scheduleSemester = sortScheduleByDate(dataMain);
+  scheduleSemester11 = sortScheduleByDate(data11);
 
-fetch("schedule1-1.json")
-  .then((r) => r.json())
-  .then((data) => {
-    scheduleSemester11 = sortScheduleByDate(data);
-  });
+  // Объединяем для начальной отрисовки
+  const merged = mergeSchedules(scheduleSemester, scheduleSemester11);
+
+  // Рендерим таблицу сразу с учётом всех данных
+  renderTable(merged, "today");
+})
+.catch(err => console.error("Ошибка загрузки JSON:", err));
 
 document.querySelectorAll('input[name="view"]').forEach((radio) => {
   radio.addEventListener("change", () => {
@@ -253,11 +257,9 @@ document.querySelectorAll('input[name="view"]').forEach((radio) => {
     } else if (radio.value === "semester") {
       renderTable(scheduleSemester, "semester");
     } else {
-      const merged = mergeSchedules(
-        scheduleSemester,
-        scheduleSemester11
-      );
+      const merged = mergeSchedules(scheduleSemester, scheduleSemester11);
       renderTable(merged, radio.value);
     }
   });
 });
+
