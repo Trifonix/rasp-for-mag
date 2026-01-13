@@ -68,6 +68,21 @@ def create_list(items):
     return ListFlowable(flow_items, bulletType='bullet', bulletText='\u2022', 
                               leftIndent=35, bulletIndent=20, spaceBefore=5, spaceAfter=10)
 
+def create_numbered_list(items):
+    flow_items = []
+    for i in items:
+        text = str(i).replace('\n', '<br/>')
+        flow_items.append(ListItem(Paragraph(text, styles['Normal'])))
+    return ListFlowable(
+        flow_items,
+        bulletType='1',   # нумерация
+        start='1',
+        leftIndent=35,
+        bulletIndent=20,
+        spaceBefore=5,
+        spaceAfter=10
+    )
+
 def process_section(section):
     section_elements = [] # Временный список для текущей секции
     
@@ -78,7 +93,13 @@ def process_section(section):
         if isinstance(section['content'], list):
             section_elements.append(create_list(section['content']))
         else:
-            section_elements.append(Paragraph(str(section['content']), styles['Normal']))
+            section_elements.append(
+                Paragraph(str(section['content']).replace('\n', '<br/>'), styles['Normal'])
+            )
+
+    if 'content-ordered' in section:
+        section_elements.append(create_numbered_list(section['content-ordered']))
+
     
     # Оборачиваем заголовок + основной текст в KeepTogether, чтобы они не разрывались
     story.append(KeepTogether(section_elements))
@@ -92,7 +113,12 @@ def process_section(section):
                 if isinstance(sub['content'], list):
                     sub_elements.append(create_list(sub['content']))
                 else:
-                    sub_elements.append(Paragraph(str(sub['content']), styles['Normal']))
+                    sub_elements.append(
+                        Paragraph(str(sub['content']).replace('\n', '<br/>'), styles['Normal'])
+                    )
+
+            if 'content-ordered' in sub:
+                sub_elements.append(create_numbered_list(sub['content-ordered']))
             
             if 'factors' in sub:
                 sub_elements.append(Paragraph("<b>Ключевые факторы системы:</b>", styles['Normal']))
