@@ -1,36 +1,44 @@
 * {
   font-family: Roboto;
 }
+
 body {
   font-family: Arial, sans-serif;
   margin: 20px;
 }
+
 table {
   width: 100%;
   border-collapse: collapse;
 }
+
 th,
 td {
   border: 1px solid #ccc;
   padding: 8px;
 }
+
 th {
   text-align: center;
   font-size: 0.8em;
   background-color: #f0f0f0;
 }
+
 tr.today {
   background-color: #ffbfa6;
   font-weight: bold;
 }
+
 tr.week {
   background-color: #eceafb;
   color: darkslategrey;
 }
+
 tr.done {
   background-color: #e6ffe9;
   color: grey;
 }
+
 tr.week-separator td {
   background-color: #d9edf7;
   font-weight: 500;
@@ -38,15 +46,66 @@ tr.week-separator td {
   font-size: 1em;
   border: 2px solid #99c;
 }
+
 .controls {
   margin: 2em 0;
 }
+
 .controls label {
   margin-right: 1em;
   padding: 1em;
   background-color: lightcyan;
   border-radius: 1em;
 }
+
 .day-group-start td {
   border-top: 2px solid #999 !important;
+}
+
+.loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  height: 100vh;
+}
+
+.loader span {
+  display: inline-block;
+  width: 1.6em;
+  height: 1.6em;
+  margin: 0 0.8em;
+  background-color: #ffbfa6;
+  border-radius: 50%;
+  animation: blinkz 1.4s infinite both;
+  box-shadow: 0 0 10px rgba(255, 191, 166, 0.5);
+}
+
+.loader span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.loader span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.loader span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes blinkz {
+
+  0%,
+  80%,
+  100% {
+    transform: scale(0.5);
+    opacity: 0.3;
+    box-shadow: 0 0 10px rgba(255, 191, 166, 0.2);
+  }
+
+  40% {
+    transform: scale(1);
+    opacity: 1;
+    box-shadow: 0 0 20px rgba(255, 191, 166, 0.8);
+  }
 }
