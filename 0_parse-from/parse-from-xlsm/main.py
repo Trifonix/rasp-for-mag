@@ -3,6 +3,10 @@ import json
 import re
 from datetime import datetime
 
+# --- НАСТРОЙКИ ---
+FILE_PATH = "0_parse-from/parse-from-xlsm/newer.xlsx"
+HEADER_ROW = 10  # Это 11-я строка в Excel (где заголовки "Дни недели", "пара" и т.д.)
+
 WEEKDAYS_MAP = {
     0: 'понедельник',
     1: 'вторник',
@@ -51,28 +55,28 @@ def join_teacher(record, teacher_key, degree_key):
         
     return prep.strip()
 
-
 def normalize_day(day_text):
     t = clean(day_text)
     if not t:
         return None
         
     parts = t.split()
+    # Проверка формата ДД.ММ.ГГГГ
     if len(parts) >= 2 and re.match(r'\d{2}\.\d{2}\.\d{4}', parts[0]):
         return parts[0] + " " + parts[1].strip()
-        
+    
+    # Проверка формата ГГГГ-ММ-ДД (стандарт pandas timestamp)
     if re.match(r'\d{4}-\d{2}-\d{2}', t):
         try:
             date_part = t.split()[0]
             dt_obj = pd.to_datetime(date_part)
-            
             weekday_num = dt_obj.weekday()
             weekday_name = WEEKDAYS_MAP.get(weekday_num, '')
-            
             return f"{dt_obj.strftime('%d.%m.%Y')} {weekday_name}"
         except:
              return None 
              
+    # Если написано просто "понедельник" без даты - игнорируем
     if len(parts) == 1 and parts[0].lower() in WEEKDAYS_MAP.values():
         return None 
              
@@ -80,18 +84,18 @@ def normalize_day(day_text):
 
 try:
     df = pd.read_excel(
-        "0_parse-from-pdf/parse-from-xlsm/new.xlsx", 
-        header=10, 
+        FILE_PATH, 
+        header=HEADER_ROW, 
         converters={'Дни недели': str, 'Дни недели.1': str}
     )
 except FileNotFoundError:
-    print("Ошибка: Файл new.xlsm не найден. Укажите правильный путь.")
+    print(f"Ошибка: Файл {FILE_PATH} не найден. Укажите правильный путь.")
     exit()
 
+# Удаляем полностью пустые строки, если они есть
 df = df.dropna(how='all')
 
-if not df.empty:
-    df = df.iloc[1:]
+# !!! УБРАЛ СТРОКУ df = df.iloc[1:], КОТОРАЯ УДАЛЯЛА ПЕРВЫЙ ДЕНЬ !!!
 
 COL_RENAME_MAP = {
     'Дни недели': 'W1_День', 'пара': 'W1_Пара', 'Вид занятий': 'W1_Вид_занятий',
@@ -103,6 +107,7 @@ COL_RENAME_MAP = {
     'Unnamed: 12': 'W2_Ученая_степень', 'Ссылка.1': 'W2_Ссылка'
 }
 
+# Чистим названия колонок от пробелов и переименовываем
 df.columns = [clean(c) for c in df.columns]
 df.rename(columns=COL_RENAME_MAP, inplace=True)
 
@@ -110,29 +115,23 @@ schedule = {}
 current_day_w1 = None
 current_day_w2 = None
 
+# Итерируемся по строкам
 for index, row in df.iterrows():
     
-    # Обновление дня W1
+    # ------------------ НЕДЕЛЯ 1 ------------------
     day_raw_w1 = row.get("W1_День")
     if pd.notna(day_raw_w1):
         normalized = normalize_day(day_raw_w1)
         if normalized:
             current_day_w1 = normalized
             
-    # Обновление дня W2
-    day_raw_w2 = row.get("W2_День")
-    if pd.notna(day_raw_w2):
-        normalized = normalize_day(day_raw_w2)
-        if normalized:
-            current_day_w2 = normalized
-
-    # Обработка Недели 1
     discipline_w1 = clean(row.get("W1_Дисциплина"))
     activity_w1 = clean(row.get("W1_Вид_занятий"))
     pair_raw_w1 = row.get("W1_Пара")
     teacher_raw_w1 = row.get("W1_Преподаватель")
     
-    if discipline_w1 and activity_w1 and clean(pair_raw_w1) and clean(teacher_raw_w1) and current_day_w1:
+    # Проверка, что есть данные о паре и дисциплине, и мы знаем, какой сейчас день
+    if discipline_w1 and activity_w1 and clean(pair_raw_w1) and current_day_w1:
         entry = {
             "Пара": fix_pair(pair_raw_w1),
             "Вид занятий": activity_w1,
@@ -142,13 +141,19 @@ for index, row in df.iterrows():
         }
         schedule.setdefault(current_day_w1, []).append(entry)
 
-    # Обработка Недели 2
+    # ------------------ НЕДЕЛЯ 2 ------------------
+    day_raw_w2 = row.get("W2_День")
+    if pd.notna(day_raw_w2):
+        normalized = normalize_day(day_raw_w2)
+        if normalized:
+            current_day_w2 = normalized
+
     discipline_w2 = clean(row.get("W2_Дисциплина"))
     activity_w2 = clean(row.get("W2_Вид_занятий"))
     pair_raw_w2 = row.get("W2_Пара")
     teacher_raw_w2 = row.get("W2_Преподаватель")
     
-    if discipline_w2 and activity_w2 and clean(pair_raw_w2) and clean(teacher_raw_w2) and current_day_w2:
+    if discipline_w2 and activity_w2 and clean(pair_raw_w2) and current_day_w2:
         entry = {
             "Пара": fix_pair(pair_raw_w2),
             "Вид занятий": activity_w2,
@@ -159,7 +164,7 @@ for index, row in df.iterrows():
         schedule.setdefault(current_day_w2, []).append(entry)
 
 # --- Сохранение JSON с сортировкой ---
-output_path = "0_parse-from-pdf/parse-from-xlsm/schedule.json"
+output_path = "0_parse-from/parse-from-xlsm/schedule.json"
 with open(output_path, "w", encoding="utf-8") as f:
     
     def sort_key(date_str):
@@ -169,6 +174,7 @@ with open(output_path, "w", encoding="utf-8") as f:
         except ValueError:
             return datetime.max 
 
+    # Фильтруем пустые ключи и сортируем
     sorted_keys = [
         key for key in schedule.keys() if sort_key(key) != datetime.max
     ]
