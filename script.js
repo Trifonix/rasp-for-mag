@@ -11,6 +11,7 @@ let scheduleSemester2 = null;
 table.style.display = "none";
 
 // 1. ЗАГРУЗКА ДАННЫХ (Один блок для всех файлов)
+// 1. ЗАГРУЗКА ДАННЫХ
 Promise.all([
   fetch("schedule.json").then(r => r.json()),
   fetch("schedule1-1.json").then(r => r.json()),
@@ -22,11 +23,13 @@ Promise.all([
   scheduleSemester11 = sortScheduleByDate(data11);
   scheduleSemester2 = sortScheduleByDate(data2);
 
-  // При первой загрузке показываем "Сегодня" (смешиваем 1 семестр и сессию)
-  const merged = mergeSchedules(scheduleSemester, scheduleSemester11);
+  // ИСПРАВЛЕНО: Добавлен scheduleSemester2 в слияние
+  const merged = mergeSchedules(scheduleSemester, scheduleSemester11, scheduleSemester2);
+  
+  // Рендерим таблицу
   renderTable(merged, "today");
 
-  // Скрываем loader и показываем таблицу
+  // Скрываем loader
   loader.style.display = "none";
   table.style.display = "";
 })
@@ -105,9 +108,10 @@ function renderTable(scheduleData, filter = "today") {
     if (!dayDateObj) continue;
 
     const visibleItems = scheduleData[day].filter(item => {
-      if (filter === "today") return dayDateObj.getTime() === today.getTime();
+      // ИСПРАВЛЕНО: Сравнение через строки вместо timestamp
+      if (filter === "today") return dayDateObj.toDateString() === today.toDateString();
       if (filter === "week") return dayDateObj >= monday && dayDateObj <= sunday;
-      return true; // для всех вариантов семестров
+      return true; 
     });
 
     if (visibleItems.length === 0) continue;
@@ -197,7 +201,7 @@ function highlightCurrentLesson() {
       const startTime = new Date(now).setHours(sH, sM, 0, 0);
       const endTime = new Date(now).setHours(eH, eM, 0, 0);
 
-      if (now >= startTime && now <= endTime) {
+      if (now.getTime() >= startTime && now.getTime() <= endTime) {
         tr.classList.add("active");
       } else {
         tr.classList.remove("active");
