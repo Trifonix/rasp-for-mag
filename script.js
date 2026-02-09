@@ -134,11 +134,15 @@ function renderTable(scheduleData, filter = "today") {
       const tr = document.createElement("tr");
       let rowClass = "other";
 
-      if (dayDateObj.getTime() === today.getTime()) {
+      if (dayDateObj.toDateString() === today.toDateString()) {
         rowClass = "today";
-      } else if (dayDateObj < today) {
+      } 
+      // 2. Если дата меньше сегодня — это прошедшее
+      else if (dayDateObj < today) {
         rowClass = "done";
-      } else if (filter === "week" || isSemesterView) {
+      } 
+      // 3. Иначе (будущее) — зависит от фильтра
+      else if (filter === "week" || isSemesterView) {
         rowClass = "week";
       }
 
@@ -167,14 +171,14 @@ function highlightCurrentLesson() {
   const todayStr = now.toDateString();
 
   document.querySelectorAll("#schedule-body tr").forEach((tr) => {
-    // Находим дату строки
-    let dateRow = tr;
+    // Пропускаем разделители
     if (tr.classList.contains('week-separator')) return;
-    
+
+    // 1. Ищем дату строки
+    let dateRow = tr;
     let firstCell = tr.querySelector('td[rowspan]');
     let dateText = firstCell ? firstCell.textContent : "";
     
-    // Если в этой строке нет даты (rowspan), ищем в предыдущих
     let tempTr = tr;
     while (!dateText && tempTr.previousElementSibling) {
       tempTr = tempTr.previousElementSibling;
@@ -183,12 +187,14 @@ function highlightCurrentLesson() {
     }
 
     const dayDateObj = parseDateObj(dateText);
+    
+    // Если даты нет или это не сегодня — снимаем активный класс и выходим
     if (!dayDateObj || dayDateObj.toDateString() !== todayStr) {
       tr.classList.remove("active");
       return;
     }
 
-    // Ищем ячейку со временем (формат 00:00-00:00)
+    // 2. Ищем время пары
     let timeCell = Array.from(tr.children).find(td => /\d{2}:\d{2}-\d{2}:\d{2}/.test(td.textContent));
     if (!timeCell) return;
 
@@ -201,10 +207,25 @@ function highlightCurrentLesson() {
       const startTime = new Date(now).setHours(sH, sM, 0, 0);
       const endTime = new Date(now).setHours(eH, eM, 0, 0);
 
+      // ЛОГИКА СТИЛЕЙ:
+      
+      // А. Если сейчас идет пара
       if (now.getTime() >= startTime && now.getTime() <= endTime) {
-        tr.classList.add("active");
-      } else {
+        tr.classList.add("active");  // Мигает
+        tr.classList.remove("done"); // Не серая
+        tr.classList.add("today");   // Оранжевая основа
+      } 
+      // Б. Если пара уже прошла сегодня
+      else if (now.getTime() > endTime) {
         tr.classList.remove("active");
+        tr.classList.add("done");    // Становится серой/зеленой
+        tr.classList.remove("today"); // Убираем оранжевый
+      }
+      // В. Если пара еще будет сегодня
+      else {
+        tr.classList.remove("active");
+        tr.classList.remove("done");
+        tr.classList.add("today");   // Ожидает (оранжевая)
       }
     }
   });
