@@ -10,26 +10,24 @@ let scheduleSemester2 = null;
 // Сначала прячем таблицу
 table.style.display = "none";
 
-// 1. ЗАГРУЗКА ДАННЫХ (Один блок для всех файлов)
-// 1. ЗАГРУЗКА ДАННЫХ
+// 1. ЗАГРУЗКА ДАННЫХ И ШРИФТОВ
 Promise.all([
   fetch("schedule.json").then(r => r.json()),
   fetch("schedule1-1.json").then(r => r.json()),
-  fetch("schedule2.json").then(r => r.json())
+  fetch("schedule2.json").then(r => r.json()),
+  document.fonts.ready // <--- ДОБАВИЛИ ЭТУ СТРОЧКУ
 ])
-.then(([dataMain, data11, data2]) => {
+.then(([dataMain, data11, data2]) => { // Четвертый результат (шрифты) нам в переменную не нужен, просто игнорируем
   // Сортируем и сохраняем
   scheduleSemester = sortScheduleByDate(dataMain);
   scheduleSemester11 = sortScheduleByDate(data11);
   scheduleSemester2 = sortScheduleByDate(data2);
 
-  // ИСПРАВЛЕНО: Добавлен scheduleSemester2 в слияние
   const merged = mergeSchedules(scheduleSemester, scheduleSemester11, scheduleSemester2);
   
-  // Рендерим таблицу
   renderTable(merged, "today");
 
-  // Скрываем loader
+  // Теперь это произойдет только когда загрузились JSON + ШРИФТЫ
   loader.style.display = "none";
   table.style.display = "";
 })
