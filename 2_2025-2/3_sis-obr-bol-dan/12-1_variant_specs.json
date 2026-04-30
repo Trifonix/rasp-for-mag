@@ -1,0 +1,12 @@
+[
+  {
+    "variant": 12,
+    "full_file": "12-2_sales_small.csv",
+    "chunk_file": "12-3_events_text.csv",
+    "chunksize": 8000,
+    "group_col": "region",
+    "metric": "revenue",
+    "folder": "./",
+    "question": "Сравнить небольшой числовой файл и текстовый файл среднего размера; объяснить, почему размер на диске и память в процессе — не одно и то же."
+  }
+]
