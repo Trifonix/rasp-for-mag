@@ -1,0 +1,382 @@
+{
+  "1": {
+    "variant": 1,
+    "numeric_rows": 2500,
+    "events_rows": 3000,
+    "text_rows": 900,
+    "text_max_features": 500,
+    "text_ngram_range": [
+      1,
+      1
+    ],
+    "text_min_df": 2,
+    "dimensionality_grid": [
+      200,
+      400,
+      600,
+      800
+    ],
+    "focus_note": "Сделайте основной акцент на сравнении плотной и разрежённой one-hot матрицы."
+  },
+  "2": {
+    "variant": 2,
+    "numeric_rows": 2700,
+    "events_rows": 3200,
+    "text_rows": 1000,
+    "text_max_features": 600,
+    "text_ngram_range": [
+      1,
+      1
+    ],
+    "text_min_df": 2,
+    "dimensionality_grid": [
+      250,
+      500,
+      750,
+      1000
+    ],
+    "focus_note": "Обратите внимание на влияние числа категорий на размер dense-представления."
+  },
+  "3": {
+    "variant": 3,
+    "numeric_rows": 2900,
+    "events_rows": 3400,
+    "text_rows": 1100,
+    "text_max_features": 700,
+    "text_ngram_range": [
+      1,
+      1
+    ],
+    "text_min_df": 2,
+    "dimensionality_grid": [
+      300,
+      600,
+      900,
+      1200
+    ],
+    "focus_note": "Сравните, как изменяются память и время при росте числа текстовых признаков."
+  },
+  "4": {
+    "variant": 4,
+    "numeric_rows": 3100,
+    "events_rows": 3600,
+    "text_rows": 1200,
+    "text_max_features": 800,
+    "text_ngram_range": [
+      1,
+      1
+    ],
+    "text_min_df": 3,
+    "dimensionality_grid": [
+      350,
+      700,
+      1050,
+      1400
+    ],
+    "focus_note": "Особое внимание уделите этапу векторизации текста и последующему обучению."
+  },
+  "5": {
+    "variant": 5,
+    "numeric_rows": 3300,
+    "events_rows": 3800,
+    "text_rows": 1300,
+    "text_max_features": 900,
+    "text_ngram_range": [
+      1,
+      1
+    ],
+    "text_min_df": 3,
+    "dimensionality_grid": [
+      400,
+      800,
+      1200,
+      1600
+    ],
+    "focus_note": "Сделайте вывод о том, где выгоднее использовать компактное кодирование признаков."
+  },
+  "6": {
+    "variant": 6,
+    "numeric_rows": 3500,
+    "events_rows": 4000,
+    "text_rows": 1400,
+    "text_max_features": 1000,
+    "text_ngram_range": [
+      1,
+      2
+    ],
+    "text_min_df": 2,
+    "dimensionality_grid": [
+      300,
+      700,
+      1100,
+      1500
+    ],
+    "focus_note": "Сравните unigram и bigram-представления по плотности и затратам ресурсов."
+  },
+  "7": {
+    "variant": 7,
+    "numeric_rows": 3700,
+    "events_rows": 4200,
+    "text_rows": 1500,
+    "text_max_features": 1100,
+    "text_ngram_range": [
+      1,
+      2
+    ],
+    "text_min_df": 2,
+    "dimensionality_grid": [
+      350,
+      800,
+      1250,
+      1700
+    ],
+    "focus_note": "Отдельно прокомментируйте, почему sparse-матрица удобнее для текстовых данных."
+  },
+  "8": {
+    "variant": 8,
+    "numeric_rows": 3900,
+    "events_rows": 4400,
+    "text_rows": 1600,
+    "text_max_features": 1200,
+    "text_ngram_range": [
+      1,
+      2
+    ],
+    "text_min_df": 3,
+    "dimensionality_grid": [
+      400,
+      900,
+      1400,
+      1900
+    ],
+    "focus_note": "Покажите, как high-cardinality категориальные признаки раздувают dense-матрицу."
+  },
+  "9": {
+    "variant": 9,
+    "numeric_rows": 4100,
+    "events_rows": 4600,
+    "text_rows": 1700,
+    "text_max_features": 1300,
+    "text_ngram_range": [
+      1,
+      2
+    ],
+    "text_min_df": 3,
+    "dimensionality_grid": [
+      450,
+      1000,
+      1500,
+      2000
+    ],
+    "focus_note": "Сделайте акцент на различии между числовыми и текстовыми признаками."
+  },
+  "10": {
+    "variant": 10,
+    "numeric_rows": 4300,
+    "events_rows": 4800,
+    "text_rows": 1800,
+    "text_max_features": 1400,
+    "text_ngram_range": [
+      1,
+      2
+    ],
+    "text_min_df": 4,
+    "dimensionality_grid": [
+      500,
+      1100,
+      1600,
+      2100
+    ],
+    "focus_note": "Отдельно прокомментируйте связь между размерностью и временем обучения модели."
+  },
+  "11": {
+    "variant": 11,
+    "numeric_rows": 4500,
+    "events_rows": 5000,
+    "text_rows": 1900,
+    "text_max_features": 1500,
+    "text_ngram_range": [
+      1,
+      1
+    ],
+    "text_min_df": 2,
+    "dimensionality_grid": [
+      300,
+      600,
+      1000,
+      1400
+    ],
+    "focus_note": "Поясните, насколько оправдан перевод sparse-матрицы в dense-вид."
+  },
+  "12": {
+    "variant": 12,
+    "numeric_rows": 4700,
+    "events_rows": 5200,
+    "text_rows": 2000,
+    "text_max_features": 1600,
+    "text_ngram_range": [
+      1,
+      1
+    ],
+    "text_min_df": 3,
+    "dimensionality_grid": [
+      350,
+      700,
+      1100,
+      1500
+    ],
+    "focus_note": "Проведите анализ того, где появляется наибольший прирост памяти: при кодировании или при обучении."
+  },
+  "13": {
+    "variant": 13,
+    "numeric_rows": 4900,
+    "events_rows": 5400,
+    "text_rows": 2100,
+    "text_max_features": 1700,
+    "text_ngram_range": [
+      1,
+      2
+    ],
+    "text_min_df": 2,
+    "dimensionality_grid": [
+      400,
+      800,
+      1300,
+      1800
+    ],
+    "focus_note": "Сфокусируйтесь на сравнении полных и компактных представлений категориальных признаков."
+  },
+  "14": {
+    "variant": 14,
+    "numeric_rows": 5100,
+    "events_rows": 5600,
+    "text_rows": 2200,
+    "text_max_features": 1800,
+    "text_ngram_range": [
+      1,
+      2
+    ],
+    "text_min_df": 3,
+    "dimensionality_grid": [
+      450,
+      900,
+      1400,
+      1900
+    ],
+    "focus_note": "Сравните, как меняются результаты при росте max_features в текстовом векторизаторе."
+  },
+  "15": {
+    "variant": 15,
+    "numeric_rows": 5300,
+    "events_rows": 5800,
+    "text_rows": 2300,
+    "text_max_features": 1900,
+    "text_ngram_range": [
+      1,
+      1
+    ],
+    "text_min_df": 4,
+    "dimensionality_grid": [
+      500,
+      1000,
+      1500,
+      2000
+    ],
+    "focus_note": "Особое внимание уделите плотности матрицы признаков и её интерпретации."
+  },
+  "16": {
+    "variant": 16,
+    "numeric_rows": 5500,
+    "events_rows": 6000,
+    "text_rows": 2400,
+    "text_max_features": 1000,
+    "text_ngram_range": [
+      1,
+      2
+    ],
+    "text_min_df": 2,
+    "dimensionality_grid": [
+      250,
+      550,
+      900,
+      1200
+    ],
+    "focus_note": "Поясните, как изменение ngram_range влияет на число признаков и стоимость обучения."
+  },
+  "17": {
+    "variant": 17,
+    "numeric_rows": 5700,
+    "events_rows": 6200,
+    "text_rows": 2500,
+    "text_max_features": 1200,
+    "text_ngram_range": [
+      1,
+      1
+    ],
+    "text_min_df": 3,
+    "dimensionality_grid": [
+      300,
+      650,
+      1000,
+      1400
+    ],
+    "focus_note": "Покажите различие между хранением данных и хранением матрицы признаков."
+  },
+  "18": {
+    "variant": 18,
+    "numeric_rows": 5900,
+    "events_rows": 6400,
+    "text_rows": 2600,
+    "text_max_features": 1400,
+    "text_ngram_range": [
+      1,
+      2
+    ],
+    "text_min_df": 4,
+    "dimensionality_grid": [
+      350,
+      700,
+      1200,
+      1600
+    ],
+    "focus_note": "Прокомментируйте, почему sparse-представление важно именно в задачах высокой размерности."
+  },
+  "19": {
+    "variant": 19,
+    "numeric_rows": 6100,
+    "events_rows": 6600,
+    "text_rows": 2700,
+    "text_max_features": 1600,
+    "text_ngram_range": [
+      1,
+      1
+    ],
+    "text_min_df": 2,
+    "dimensionality_grid": [
+      400,
+      850,
+      1300,
+      1700
+    ],
+    "focus_note": "Сделайте вывод о компромиссе между удобством dense-матрицы и эффективностью sparse-формата."
+  },
+  "20": {
+    "variant": 20,
+    "numeric_rows": 6300,
+    "events_rows": 6800,
+    "text_rows": 2800,
+    "text_max_features": 1800,
+    "text_ngram_range": [
+      1,
+      2
+    ],
+    "text_min_df": 3,
+    "dimensionality_grid": [
+      450,
+      900,
+      1400,
+      1800
+    ],
+    "focus_note": "Дайте сводный вывод о том, какие представления признаков предпочтительны для разных типов данных."
+  }
+}
