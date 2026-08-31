@@ -10,6 +10,8 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 body {
@@ -72,6 +74,26 @@ th {
 .cell-date {
   white-space: nowrap;
   font-weight: 600;
+}
+
+tr.lesson-row td {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+tr.lesson-row td * {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+tr.lesson-row::before {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+tr.lesson-row td::before {
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 tr.lesson-row.today {
@@ -137,7 +159,6 @@ tr.week-separator td {
   text-align: center;
   font-size: clamp(0.78rem, 3.2vw, 0.95rem);
   line-height: 1.2;
-  user-select: none;
 }
 
 .controls label.control-btn:active {
