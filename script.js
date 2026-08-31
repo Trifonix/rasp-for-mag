@@ -2,34 +2,39 @@ const loader = document.getElementById("loader");
 const table = document.querySelector("table");
 const tbody = document.getElementById("schedule-body");
 
-// Переменные для хранения данных
+const SEMESTER_VIEWS = [
+  { value: "semester", scheduleKey: "semester1" },
+  { value: "semester2", scheduleKey: "semester2" },
+  { value: "semester3", scheduleKey: "semester3" },
+];
+
 let scheduleSemester = null;
-let scheduleSemester11 = null;
 let scheduleSemester2 = null;
 let scheduleSemester3 = null;
+let currentSemesterView = null;
 
-// Сначала прячем таблицу
 table.style.display = "none";
 
-// 1. ЗАГРУЗКА ДАННЫХ И ШРИФТОВ
 Promise.all([
   fetch("schedule.json").then(r => r.json()),
-  fetch("schedule1-1.json").then(r => r.json()),
   fetch("schedule2.json").then(r => r.json()),
   fetch("schedule3.json").then(r => r.json()),
   document.fonts.ready
 ])
-.then(([dataMain, data11, data2, data3]) => {
+.then(([dataMain, data2, data3]) => {
   scheduleSemester = sortScheduleByDate(dataMain);
-  scheduleSemester11 = sortScheduleByDate(data11);
   scheduleSemester2 = sortScheduleByDate(data2);
   scheduleSemester3 = sortScheduleByDate(data3);
 
-  const merged = mergeSchedules(scheduleSemester, scheduleSemester11, scheduleSemester2, scheduleSemester3);
+  currentSemesterView = detectCurrentSemesterView({
+    semester1: scheduleSemester,
+    semester2: scheduleSemester2,
+    semester3: scheduleSemester3,
+  });
 
-  renderTable(merged, "today");
+  updateControlStyles();
+  renderTable(getMergedSchedules(), "today");
 
-  // Теперь это произойдет только когда загрузились JSON + ШРИФТЫ
   loader.style.display = "none";
   table.style.display = "";
 })
@@ -38,12 +43,102 @@ Promise.all([
   console.error("Ошибка:", err);
 });
 
-// 2. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+function getScheduleByView(view) {
+  if (view === "semester") return scheduleSemester;
+  if (view === "semester2") return scheduleSemester2;
+  if (view === "semester3") return scheduleSemester3;
+  return null;
+}
+
+function getMergedSchedules() {
+  return mergeSchedules(scheduleSemester, scheduleSemester2, scheduleSemester3);
+}
+
 function parseDateObj(str) {
   const match = str.match(/\d{2}\.\d{2}\.\d{4}/);
   if (!match) return null;
   const [d, m, y] = match[0].split(".");
   return new Date(`${y}-${m}-${d}`);
+}
+
+function getScheduleDateRange(schedule) {
+  if (!schedule) return null;
+
+  const dates = Object.keys(schedule)
+    .map(parseDateObj)
+    .filter(Boolean);
+
+  if (!dates.length) return null;
+
+  dates.sort((a, b) => a - b);
+  return { min: dates[0], max: dates[dates.length - 1] };
+}
+
+function detectCurrentSemesterView(schedulesByKey) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  for (const { value, scheduleKey } of SEMESTER_VIEWS) {
+    const range = getScheduleDateRange(schedulesByKey[scheduleKey]);
+    if (range && today >= range.min && today <= range.max) {
+      return value;
+    }
+  }
+
+  let nearestUpcoming = null;
+  let nearestDiff = Infinity;
+
+  for (const { value, scheduleKey } of SEMESTER_VIEWS) {
+    const range = getScheduleDateRange(schedulesByKey[scheduleKey]);
+    if (!range) continue;
+
+    if (range.min >= today) {
+      const diff = range.min - today;
+      if (diff < nearestDiff) {
+        nearestDiff = diff;
+        nearestUpcoming = value;
+      }
+    }
+  }
+
+  if (nearestUpcoming) return nearestUpcoming;
+
+  let latestPast = null;
+  let latestEnd = null;
+
+  for (const { value, scheduleKey } of SEMESTER_VIEWS) {
+    const range = getScheduleDateRange(schedulesByKey[scheduleKey]);
+    if (!range) continue;
+
+    if (!latestEnd || range.max > latestEnd) {
+      latestEnd = range.max;
+      latestPast = value;
+    }
+  }
+
+  return latestPast || "semester3";
+}
+
+function updateControlStyles() {
+  document.querySelectorAll(".controls label.control-btn").forEach((label) => {
+    label.classList.remove(
+      "control-today",
+      "control-week",
+      "control-semester-past",
+      "control-semester-current"
+    );
+
+    const view = label.dataset.view;
+    if (view === "today") {
+      label.classList.add("control-today");
+    } else if (view === "week") {
+      label.classList.add("control-week");
+    } else if (view === currentSemesterView) {
+      label.classList.add("control-semester-current");
+    } else {
+      label.classList.add("control-semester-past");
+    }
+  });
 }
 
 function sortScheduleByDate(schedule) {
@@ -89,7 +184,6 @@ function mergeSchedules(...schedules) {
   return sortScheduleByDate(result);
 }
 
-// 3. ОТРИСОВКА ТАБЛИЦЫ
 function renderTable(scheduleData, filter = "today") {
   tbody.innerHTML = "";
   const today = new Date();
@@ -108,7 +202,6 @@ function renderTable(scheduleData, filter = "today") {
     if (!dayDateObj) continue;
 
     const visibleItems = scheduleData[day].filter(item => {
-      // ИСПРАВЛЕНО: Сравнение через строки вместо timestamp
       if (filter === "today") return dayDateObj.toDateString() === today.toDateString();
       if (filter === "week") return dayDateObj >= monday && dayDateObj <= sunday;
       return true;
@@ -116,7 +209,6 @@ function renderTable(scheduleData, filter = "today") {
 
     if (visibleItems.length === 0) continue;
 
-    // Разделитель недель
     const isSemesterView = filter.includes("semester");
     if (isSemesterView) {
       const weekNumber = getWeekNumberISO(dayDateObj);
@@ -136,13 +228,9 @@ function renderTable(scheduleData, filter = "today") {
 
       if (dayDateObj.toDateString() === today.toDateString()) {
         rowClass = "today";
-      }
-      // 2. Если дата меньше сегодня — это прошедшее
-      else if (dayDateObj < today) {
+      } else if (dayDateObj < today) {
         rowClass = "done";
-      }
-      // 3. Иначе (будущее) — зависит от фильтра
-      else if (filter === "week" || isSemesterView) {
+      } else if (filter === "week" || isSemesterView) {
         rowClass = "week";
       }
 
@@ -165,37 +253,31 @@ function renderTable(scheduleData, filter = "today") {
   highlightCurrentLesson();
 }
 
-// 4. ПОДСВЕТКА ТЕКУЩЕЙ ПАРЫ
 function highlightCurrentLesson() {
   const now = new Date();
   const todayStr = now.toDateString();
 
   document.querySelectorAll("#schedule-body tr").forEach((tr) => {
-    // Пропускаем разделители
-    if (tr.classList.contains('week-separator')) return;
+    if (tr.classList.contains("week-separator")) return;
 
-    // 1. Ищем дату строки
-    let dateRow = tr;
-    let firstCell = tr.querySelector('td[rowspan]');
+    let firstCell = tr.querySelector("td[rowspan]");
     let dateText = firstCell ? firstCell.textContent : "";
 
     let tempTr = tr;
     while (!dateText && tempTr.previousElementSibling) {
       tempTr = tempTr.previousElementSibling;
-      let cell = tempTr.querySelector('td[rowspan]');
+      const cell = tempTr.querySelector("td[rowspan]");
       if (cell) dateText = cell.textContent;
     }
 
     const dayDateObj = parseDateObj(dateText);
 
-    // Если даты нет или это не сегодня — снимаем активный класс и выходим
     if (!dayDateObj || dayDateObj.toDateString() !== todayStr) {
       tr.classList.remove("active");
       return;
     }
 
-    // 2. Ищем время пары
-    let timeCell = Array.from(tr.children).find(td => /\d{2}:\d{2}-\d{2}:\d{2}/.test(td.textContent));
+    const timeCell = Array.from(tr.children).find(td => /\d{2}:\d{2}-\d{2}:\d{2}/.test(td.textContent));
     if (!timeCell) return;
 
     const match = timeCell.textContent.match(/(\d{2}:\d{2})-(\d{2}:\d{2})/);
@@ -207,53 +289,38 @@ function highlightCurrentLesson() {
       const startTime = new Date(now).setHours(sH, sM, 0, 0);
       const endTime = new Date(now).setHours(eH, eM, 0, 0);
 
-      // ЛОГИКА СТИЛЕЙ:
-
-      // А. Если сейчас идет пара
       if (now.getTime() >= startTime && now.getTime() <= endTime) {
-        tr.classList.add("active");  // Мигает
-        tr.classList.remove("done"); // Не серая
-        tr.classList.add("today");   // Оранжевая основа
-      }
-      // Б. Если пара уже прошла сегодня
-      else if (now.getTime() > endTime) {
+        tr.classList.add("active");
+        tr.classList.remove("done");
+        tr.classList.add("today");
+      } else if (now.getTime() > endTime) {
         tr.classList.remove("active");
-        tr.classList.add("done");    // Становится серой/зеленой
-        tr.classList.remove("today"); // Убираем оранжевый
-      }
-      // В. Если пара еще будет сегодня
-      else {
+        tr.classList.add("done");
+        tr.classList.remove("today");
+      } else {
         tr.classList.remove("active");
         tr.classList.remove("done");
-        tr.classList.add("today");   // Ожидает (оранжевая)
+        tr.classList.add("today");
       }
     }
   });
 }
 
-// 5. ОБРАБОТКА ПЕРЕКЛЮЧАТЕЛЕЙ (Radio Buttons)
 document.querySelectorAll('input[name="view"]').forEach((radio) => {
   radio.addEventListener("change", () => {
-    if (radio.value === "semester1-1") {
-      renderTable(scheduleSemester11, "semester");
-    } else if (radio.value === "semester") {
-      renderTable(scheduleSemester, "semester");
-    } else if (radio.value === "semester2") {
-      renderTable(scheduleSemester2, "semester2");
-    } else if (radio.value === "semester3") {
-      renderTable(scheduleSemester3, "semester3");
+    const schedule = getScheduleByView(radio.value);
+    if (schedule) {
+      renderTable(schedule, radio.value);
     } else {
-      const merged = mergeSchedules(scheduleSemester, scheduleSemester11, scheduleSemester2, scheduleSemester3);
-      renderTable(merged, radio.value);
+      renderTable(getMergedSchedules(), radio.value);
     }
   });
 });
 
-// Анимация и интервал
 const style = document.createElement("style");
 style.innerHTML = `
   @keyframes blink { 0% { background-color: orange; } 50% { background-color: whitesmoke; } 100% { background-color: orange; } }
   tr.active { animation: blink 2s infinite; font-weight: bold; }
 `;
 document.head.appendChild(style);
-setInterval(highlightCurrentLesson, 30000); // Проверяем раз в 30 сек
+setInterval(highlightCurrentLesson, 30000);

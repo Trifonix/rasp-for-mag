@@ -51,11 +51,36 @@ tr.week-separator td {
   margin: 2em 0;
 }
 
-.controls label {
+.controls label.control-btn {
   margin-right: 1em;
   padding: 1em;
-  background-color: lightcyan;
   border-radius: 1em;
+  cursor: pointer;
+  transition: box-shadow 0.15s ease;
+}
+
+.controls label.control-btn:has(input:checked) {
+  box-shadow: 0 0 0 2px #333;
+}
+
+.controls label.control-today {
+  background-color: #7b1fa2;
+  color: #f3e5f5;
+}
+
+.controls label.control-week {
+  background-color: #ffcdd2;
+  color: #4a2020;
+}
+
+.controls label.control-semester-past {
+  background-color: #c8e6c9;
+  color: #1b5e20;
+}
+
+.controls label.control-semester-current {
+  background-color: #fff59d;
+  color: #5d4037;
 }
 
 .day-group-start td {
