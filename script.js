@@ -1,5 +1,5 @@
 const loader = document.getElementById("loader");
-const table = document.querySelector("table");
+const table = document.querySelector(".schedule-table");
 const tbody = document.getElementById("schedule-body");
 
 const SEMESTER_VIEWS = [
@@ -234,18 +234,25 @@ function renderTable(scheduleData, filter = "today") {
         rowClass = "week";
       }
 
-      tr.className = rowClass;
+      tr.className = `lesson-row ${rowClass}`;
+      tr.dataset.date = day;
       if (index === 0) tr.classList.add("day-group-start");
 
-      const dateCell = index === 0 ? `<td rowspan="${visibleItems.length}">${day}</td>` : "";
+      const dateCell = index === 0
+        ? `<td class="cell-date" rowspan="${visibleItems.length}">${day}</td>`
+        : "";
+
+      const linkHtml = item["Ссылка"]
+        ? `<a class="lesson-link" href="${item["Ссылка"]}" target="_blank" rel="noopener noreferrer">Открыть</a>`
+        : "";
 
       tr.innerHTML = `
         ${dateCell}
-        <td>${item["Пара"]}</td>
-        <td>${item["Вид занятий"]}</td>
-        <td>${item["Дисциплина"]}</td>
-        <td>${item["Преподаватель"]}</td>
-        <td>${item["Ссылка"] ? `<a href="${item["Ссылка"]}" target="_blank">Ссылка</a>` : ""}</td>
+        <td data-label="Пара">${item["Пара"]}</td>
+        <td data-label="Вид">${item["Вид занятий"]}</td>
+        <td data-label="Дисциплина">${item["Дисциплина"]}</td>
+        <td data-label="Преподаватель">${item["Преподаватель"]}</td>
+        <td data-label="Ссылка">${linkHtml}</td>
       `;
       tbody.appendChild(tr);
     });
@@ -257,20 +264,8 @@ function highlightCurrentLesson() {
   const now = new Date();
   const todayStr = now.toDateString();
 
-  document.querySelectorAll("#schedule-body tr").forEach((tr) => {
-    if (tr.classList.contains("week-separator")) return;
-
-    let firstCell = tr.querySelector("td[rowspan]");
-    let dateText = firstCell ? firstCell.textContent : "";
-
-    let tempTr = tr;
-    while (!dateText && tempTr.previousElementSibling) {
-      tempTr = tempTr.previousElementSibling;
-      const cell = tempTr.querySelector("td[rowspan]");
-      if (cell) dateText = cell.textContent;
-    }
-
-    const dayDateObj = parseDateObj(dateText);
+  document.querySelectorAll("#schedule-body tr.lesson-row").forEach((tr) => {
+    const dayDateObj = parseDateObj(tr.dataset.date);
 
     if (!dayDateObj || dayDateObj.toDateString() !== todayStr) {
       tr.classList.remove("active");
@@ -317,10 +312,4 @@ document.querySelectorAll('input[name="view"]').forEach((radio) => {
   });
 });
 
-const style = document.createElement("style");
-style.innerHTML = `
-  @keyframes blink { 0% { background-color: orange; } 50% { background-color: whitesmoke; } 100% { background-color: orange; } }
-  tr.active { animation: blink 2s infinite; font-weight: bold; }
-`;
-document.head.appendChild(style);
 setInterval(highlightCurrentLesson, 30000);
