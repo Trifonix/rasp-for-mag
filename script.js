@@ -6,6 +6,7 @@ const tbody = document.getElementById("schedule-body");
 let scheduleSemester = null;
 let scheduleSemester11 = null;
 let scheduleSemester2 = null;
+let scheduleSemester3 = null;
 
 // Сначала прячем таблицу
 table.style.display = "none";
@@ -15,16 +16,17 @@ Promise.all([
   fetch("schedule.json").then(r => r.json()),
   fetch("schedule1-1.json").then(r => r.json()),
   fetch("schedule2.json").then(r => r.json()),
-  document.fonts.ready // <--- ДОБАВИЛИ ЭТУ СТРОЧКУ
+  fetch("schedule3.json").then(r => r.json()),
+  document.fonts.ready
 ])
-.then(([dataMain, data11, data2]) => { // Четвертый результат (шрифты) нам в переменную не нужен, просто игнорируем
-  // Сортируем и сохраняем
+.then(([dataMain, data11, data2, data3]) => {
   scheduleSemester = sortScheduleByDate(dataMain);
   scheduleSemester11 = sortScheduleByDate(data11);
   scheduleSemester2 = sortScheduleByDate(data2);
+  scheduleSemester3 = sortScheduleByDate(data3);
 
-  const merged = mergeSchedules(scheduleSemester, scheduleSemester11, scheduleSemester2);
-  
+  const merged = mergeSchedules(scheduleSemester, scheduleSemester11, scheduleSemester2, scheduleSemester3);
+
   renderTable(merged, "today");
 
   // Теперь это произойдет только когда загрузились JSON + ШРИФТЫ
@@ -109,7 +111,7 @@ function renderTable(scheduleData, filter = "today") {
       // ИСПРАВЛЕНО: Сравнение через строки вместо timestamp
       if (filter === "today") return dayDateObj.toDateString() === today.toDateString();
       if (filter === "week") return dayDateObj >= monday && dayDateObj <= sunday;
-      return true; 
+      return true;
     });
 
     if (visibleItems.length === 0) continue;
@@ -134,11 +136,11 @@ function renderTable(scheduleData, filter = "today") {
 
       if (dayDateObj.toDateString() === today.toDateString()) {
         rowClass = "today";
-      } 
+      }
       // 2. Если дата меньше сегодня — это прошедшее
       else if (dayDateObj < today) {
         rowClass = "done";
-      } 
+      }
       // 3. Иначе (будущее) — зависит от фильтра
       else if (filter === "week" || isSemesterView) {
         rowClass = "week";
@@ -148,7 +150,7 @@ function renderTable(scheduleData, filter = "today") {
       if (index === 0) tr.classList.add("day-group-start");
 
       const dateCell = index === 0 ? `<td rowspan="${visibleItems.length}">${day}</td>` : "";
-      
+
       tr.innerHTML = `
         ${dateCell}
         <td>${item["Пара"]}</td>
@@ -176,7 +178,7 @@ function highlightCurrentLesson() {
     let dateRow = tr;
     let firstCell = tr.querySelector('td[rowspan]');
     let dateText = firstCell ? firstCell.textContent : "";
-    
+
     let tempTr = tr;
     while (!dateText && tempTr.previousElementSibling) {
       tempTr = tempTr.previousElementSibling;
@@ -185,7 +187,7 @@ function highlightCurrentLesson() {
     }
 
     const dayDateObj = parseDateObj(dateText);
-    
+
     // Если даты нет или это не сегодня — снимаем активный класс и выходим
     if (!dayDateObj || dayDateObj.toDateString() !== todayStr) {
       tr.classList.remove("active");
@@ -201,18 +203,18 @@ function highlightCurrentLesson() {
       const [_, start, end] = match;
       const [sH, sM] = start.split(":").map(Number);
       const [eH, eM] = end.split(":").map(Number);
-      
+
       const startTime = new Date(now).setHours(sH, sM, 0, 0);
       const endTime = new Date(now).setHours(eH, eM, 0, 0);
 
       // ЛОГИКА СТИЛЕЙ:
-      
+
       // А. Если сейчас идет пара
       if (now.getTime() >= startTime && now.getTime() <= endTime) {
         tr.classList.add("active");  // Мигает
         tr.classList.remove("done"); // Не серая
         tr.classList.add("today");   // Оранжевая основа
-      } 
+      }
       // Б. Если пара уже прошла сегодня
       else if (now.getTime() > endTime) {
         tr.classList.remove("active");
@@ -238,9 +240,10 @@ document.querySelectorAll('input[name="view"]').forEach((radio) => {
       renderTable(scheduleSemester, "semester");
     } else if (radio.value === "semester2") {
       renderTable(scheduleSemester2, "semester2");
+    } else if (radio.value === "semester3") {
+      renderTable(scheduleSemester3, "semester3");
     } else {
-      // Для "Сегодня" и "Недели" объединяем основные данные
-      const merged = mergeSchedules(scheduleSemester, scheduleSemester11, scheduleSemester2);
+      const merged = mergeSchedules(scheduleSemester, scheduleSemester11, scheduleSemester2, scheduleSemester3);
       renderTable(merged, radio.value);
     }
   });
