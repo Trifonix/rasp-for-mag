@@ -19,7 +19,7 @@ from pathlib import Path
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_INPUT = ROOT / "0_parse-from" / "2026-08-31" / "2026-08-31.xlsm"
+DEFAULT_INPUT = ROOT / "0_parse-from" / "2026-09-05" / "2026-09-05.xlsm"
 DEFAULT_OUTPUT = ROOT / "schedule3.json"
 DEFAULT_GROUP = "12-25РПм"
 HEADER_ROW = 10

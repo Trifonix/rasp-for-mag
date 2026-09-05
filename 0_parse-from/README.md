@@ -1,36 +1,53 @@
 # Обновление расписания
 
-## Быстрый старт (3 семестр)
+## Единый цикл (рекомендуется)
 
-1. Положите новый файл расписания в `0_parse-from/YYYY-MM-DD/` (например, `0_parse-from/2026-09-07/2026-09-07.xlsm`).
-2. Запустите парсер с дополнением существующего JSON:
+Положите новый `.xlsm` в `0_parse-from/` и запустите:
 
 ```bash
-python 0_parse-from/parse-from-xlsm/main.py "0_parse-from/2026-09-07/2026-09-07.xlsm" --merge
+pip install -r 0_parse-from/requirements.txt
+python 0_parse-from/update_schedule.py
 ```
 
-3. Закоммитьте и запушьте `schedule3.json` — GitHub Pages обновит сайт.
+Или с явным путём:
 
-## Параметры
+```bash
+python 0_parse-from/update_schedule.py "0_parse-from/Расписание_ИИТ_1-2_неделя.xlsm"
+```
+
+Скрипт делает:
+
+1. **excel** — парсит лист `12-25РПм`
+2. **json** — дополняет `schedule3.json` (фронтенд / GitHub Pages)
+3. **date_excel** — переносит файл в `0_parse-from/YYYY-MM-DD/YYYY-MM-DD.xlsm`
+
+Публикация:
+
+```bash
+git add schedule3.json 0_parse-from/
+git commit -m "update schedule3"
+git push
+```
+
+Сайт: https://trifonix.github.io/rasp-for-mag/
+
+## Только парсер (без архива)
+
+```bash
+python 0_parse-from/parse-from-xlsm/main.py "0_parse-from/2026-09-05/2026-09-05.xlsm" --merge
+```
 
 | Параметр | Описание |
 |----------|----------|
-| `input` | Путь к `.xlsm` / `.xlsx` (по умолчанию — `0_parse-from/2026-08-31/2026-08-31.xlsm`) |
+| `input` | Путь к `.xlsm` / `.xlsx` |
 | `--group` | Лист группы (по умолчанию `12-25РПм`) |
-| `--output` | Файл JSON (по умолчанию `schedule3.json`) |
-| `--merge` | Дополнить/обновить существующий JSON |
+| `--output` | JSON (по умолчанию `schedule3.json`) |
+| `--merge` | Дополнить существующий JSON |
 | `--dry-run` | Показать результат без записи |
+| `--no-archive` | В `update_schedule.py`: не переносить Excel |
 
 ## Зависимости
 
 ```bash
-pip install pandas openpyxl
+pip install -r 0_parse-from/requirements.txt
 ```
-
-## Публикация
-
-Сайт — статические файлы в корне репозитория. После push в `main` GitHub Pages отдаёт:
-
-`https://trifonix.github.io/rasp-for-mag/`
-
-JSON расписания 3 семестра: `https://trifonix.github.io/rasp-for-mag/schedule3.json`
