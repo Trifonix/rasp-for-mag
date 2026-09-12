@@ -38,6 +38,22 @@ from main import (  # noqa: E402
 )
 
 
+def cleanup_pycache(base: Path = PARSE_DIR) -> None:
+    """Удаляет все __pycache__ под base после отработки скрипта."""
+    removed = 0
+    for cache_dir in base.rglob("__pycache__"):
+        if cache_dir.is_dir():
+            shutil.rmtree(cache_dir, ignore_errors=True)
+            removed += 1
+            try:
+                rel = cache_dir.relative_to(ROOT)
+            except ValueError:
+                rel = cache_dir
+            print(f"  удалено: {rel}")
+    if removed == 0:
+        print("  __pycache__ не найден")
+
+
 def find_newest_inbox_excel() -> Path | None:
     """Ищет незаархивированные .xlsm/.xlsx прямо в 0_parse-from/."""
     candidates = [
@@ -129,28 +145,34 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main() -> int:
     args = build_parser().parse_args()
+    exit_code = 1
 
-    if args.input:
-        input_path = Path(args.input)
-        if not input_path.is_absolute():
-            input_path = (ROOT / input_path).resolve()
-    else:
-        found = find_newest_inbox_excel()
-        if not found:
-            print(
-                "Ошибка: укажите файл или положите .xlsm в 0_parse-from/",
-                file=sys.stderr,
-            )
-            return 1
-        input_path = found
-        print(f"Автовыбор файла: {input_path.relative_to(ROOT)}")
+    try:
+        if args.input:
+            input_path = Path(args.input)
+            if not input_path.is_absolute():
+                input_path = (ROOT / input_path).resolve()
+        else:
+            found = find_newest_inbox_excel()
+            if not found:
+                print(
+                    "Ошибка: укажите файл или положите .xlsm в 0_parse-from/",
+                    file=sys.stderr,
+                )
+                return 1
+            input_path = found
+            print(f"Автовыбор файла: {input_path.relative_to(ROOT)}")
 
-    return run_pipeline(
-        input_path=input_path,
-        group=args.group,
-        output_path=Path(args.output),
-        archive=not args.no_archive,
-    )
+        exit_code = run_pipeline(
+            input_path=input_path,
+            group=args.group,
+            output_path=Path(args.output),
+            archive=not args.no_archive,
+        )
+        return exit_code
+    finally:
+        print("=== cleanup __pycache__ ===")
+        cleanup_pycache(PARSE_DIR)
 
 
 if __name__ == "__main__":

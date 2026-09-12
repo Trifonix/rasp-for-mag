@@ -19,7 +19,7 @@ from pathlib import Path
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_INPUT = ROOT / "0_parse-from" / "2026-09-05" / "2026-09-05.xlsm"
+DEFAULT_INPUT = ROOT / "0_parse-from" / "2026-09-12" / "2026-09-12.xlsm"
 DEFAULT_OUTPUT = ROOT / "schedule3.json"
 DEFAULT_GROUP = "12-25РПм"
 HEADER_ROW = 10
@@ -50,6 +50,7 @@ SINGLE_WEEK_RENAME = {
     "Вид занятий": "W1_Вид_занятий",
     "Дисциплина": "W1_Дисциплина",
     "Преподаватель": "W1_Преподаватель",
+    "Unnamed: 5": "W1_Ученая_степень",
     "Unnamed: 6": "W1_Ученая_степень",
     "Ссылка": "W1_Ссылка",
 }
@@ -61,6 +62,7 @@ DUAL_WEEK_RENAME = {
     "Дисциплина": "W1_Дисциплина",
     "Преподаватель": "W1_Преподаватель",
     "Unnamed: 5": "W1_Ученая_степень",
+    "Unnamed: 6": "W1_Ученая_степень",
     "Ссылка": "W1_Ссылка",
     "Дни недели.1": "W2_День",
     "пара.1": "W2_Пара",
@@ -68,7 +70,17 @@ DUAL_WEEK_RENAME = {
     "Дисциплина.1": "W2_Дисциплина",
     "Преподаватель.1": "W2_Преподаватель",
     "Unnamed: 12": "W2_Ученая_степень",
+    "Unnamed: 14": "W2_Ученая_степень",
     "Ссылка.1": "W2_Ссылка",
+}
+
+HEADER_LIKE_DAYS = {
+    "дни недели",
+    "пара",
+    "вид занятий",
+    "дисциплина",
+    "преподаватель",
+    "ссылка",
 }
 
 
@@ -112,6 +124,9 @@ def normalize_day(day_text) -> str | None:
     if not text:
         return None
 
+    if text.lower() in HEADER_LIKE_DAYS:
+        return None
+
     parts = text.split()
     if len(parts) >= 2 and re.match(r"\d{2}\.\d{2}\.\d{4}", parts[0]):
         return f"{parts[0]} {parts[1].strip()}"
@@ -125,10 +140,8 @@ def normalize_day(day_text) -> str | None:
         except Exception:
             return None
 
-    if len(parts) == 1 and parts[0].lower() in WEEKDAYS_MAP.values():
-        return None
-
-    return text
+    # weekday-only labels and other non-date noise (repeated headers, titles)
+    return None
 
 
 def parse_week_block(df: pd.DataFrame, prefix: str) -> dict[str, list[dict]]:
@@ -149,12 +162,18 @@ def parse_week_block(df: pd.DataFrame, prefix: str) -> dict[str, list[dict]]:
             normalized = normalize_day(day_raw)
             if normalized:
                 current_day = normalized
+            elif clean(day_raw).lower() in HEADER_LIKE_DAYS:
+                current_day = None
 
         discipline = clean(row.get(discipline_col))
         activity = clean(row.get(activity_col))
         pair_raw = row.get(pair_col)
 
         if not (discipline and activity and clean(pair_raw) and current_day):
+            continue
+
+        # Skip footer / meta rows that look like lessons
+        if discipline.lower() in HEADER_LIKE_DAYS or "директор" in discipline.lower():
             continue
 
         entry = {
