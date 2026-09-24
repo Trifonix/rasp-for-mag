@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Игорь Семёнов — системный администратор</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #e8edf2;
+      --panel: #f7f9fb;
+      --steel: #2c3640;
+      --steel-dim: #5a6775;
+      --line: #c5ced8;
+      --ps-blue: #012456;
+      --ps-bar: #0a3a6e;
+      --accent: #0d9488;
+      --warn: #c45c26;
+      --white: #ffffff;
+      --mono: "IBM Plex Mono", ui-monospace, monospace;
+      --sans: "IBM Plex Sans", system-ui, sans-serif;
+      --pad: clamp(1.25rem, 3.5vw, 2.75rem);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--steel);
+      line-height: 1.5;
+      background-image:
+        linear-gradient(90deg, rgba(44, 54, 64, 0.04) 1px, transparent 1px),
+        linear-gradient(rgba(44, 54, 64, 0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.85rem var(--pad);
+      background: rgba(247, 249, 251, 0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--line);
+      font-family: var(--mono);
+      font-size: 0.75rem;
+    }
+
+    .topbar-brand {
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .topbar nav {
+      display: flex;
+      gap: 1.25rem;
+    }
+
+    .topbar a {
+      color: var(--steel-dim);
+      transition: color 0.2s;
+    }
+
+    .topbar a:hover { color: var(--steel); }
+
+    /* HERO */
+    .hero {
+      min-height: calc(100vh - 48px);
+      display: grid;
+      grid-template-columns: 1fr;
+      position: relative;
+      overflow: hidden;
+    }
+
+    @media (min-width: 900px) {
+      .hero {
+        grid-template-columns: 1fr 1.05fr;
+        min-height: calc(100vh - 52px);
+      }
+    }
+
+    .hero-copy {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: clamp(2.5rem, 6vw, 4rem) var(--pad);
+      background:
+        linear-gradient(160deg, #dfe6ee 0%, var(--bg) 55%, #d4dde6 100%);
+      position: relative;
+      z-index: 2;
+      animation: slideIn 0.8s ease both;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.04em;
+    }
+
+    .status-pill::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      animation: blink 1.6s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+
+    .brand {
+      font-size: clamp(2.6rem, 6.5vw, 4.4rem);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.85rem;
+    }
+
+    .brand em {
+      font-style: normal;
+      color: var(--accent);
+      display: block;
+    }
+
+    .hero h1 {
+      font-size: clamp(1rem, 2vw, 1.15rem);
+      font-weight: 500;
+      color: var(--steel);
+      margin-bottom: 0.65rem;
+    }
+
+    .hero-lead {
+      color: var(--steel-dim);
+      max-width: 38ch;
+      font-size: 0.95rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .btn {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.8rem 1.2rem;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.2s;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .btn-primary {
+      background: var(--steel);
+      color: var(--white);
+    }
+
+    .btn-primary:hover { background: #1a2229; }
+
+    .btn-outline {
+      background: transparent;
+      border-color: var(--line);
+      color: var(--steel);
+    }
+
+    .btn-outline:hover { border-color: var(--steel); }
+
+    /* PowerShell window as hero visual */
+    .hero-terminal {
+      background: #1a2330;
+      display: flex;
+      flex-direction: column;
+      min-height: 380px;
+      padding: 1.25rem;
+      animation: fadeUp 1s 0.2s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (min-width: 900px) {
+      .hero-terminal {
+        min-height: calc(100vh - 52px);
+        padding: 2rem;
+        justify-content: center;
+      }
+    }
+
+    .ps-window {
+      background: var(--ps-blue);
+      border: 1px solid #1a4a7a;
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.35);
+      max-width: 560px;
+      width: 100%;
+      margin-inline: auto;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: #e8f0f8;
+      overflow: hidden;
+    }
+
+    .ps-titlebar {
+      background: var(--ps-bar);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.4rem 0.65rem;
+      font-size: 0.7rem;
+      color: #b8cde0;
+    }
+
+    .ps-dots { display: flex; gap: 0.35rem; }
+    .ps-dots span {
+      width: 10px;
+      height: 10px;
+      background: #4a6f92;
+    }
+
+    .ps-body {
+      padding: 1rem 1.1rem 1.25rem;
+      min-height: 280px;
+      white-space: pre-wrap;
+      line-height: 1.55;
+    }
+
+    .ps-prompt { color: #f0f4f8; }
+    .ps-cmd { color: #7dd3c0; }
+    .ps-out { color: #a8bdd4; }
+    .ps-cursor {
+      display: inline-block;
+      width: 0.55em;
+      height: 1.1em;
+      background: #e8f0f8;
+      vertical-align: text-bottom;
+      margin-left: 2px;
+      animation: cursorBlink 1s step-end infinite;
+    }
+
+    @keyframes cursorBlink {
+      50% { opacity: 0; }
+    }
+
+    /* sections */
+    section { padding: clamp(3rem, 7vw, 5rem) var(--pad); }
+
+    .section-kicker {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-title {
+      font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.65rem;
+      max-width: 22ch;
+    }
+
+    .section-lead {
+      color: var(--steel-dim);
+      max-width: 48ch;
+      margin-bottom: 2rem;
+      font-size: 0.95rem;
+    }
+
+    .about {
+      background: var(--panel);
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      gap: 2rem;
+    }
+
+    @media (min-width: 800px) {
+      .about {
+        grid-template-columns: 1fr 1fr;
+        align-items: start;
+      }
+    }
+
+    .skill-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.65rem;
+    }
+
+    .skill {
+      border: 1px solid var(--line);
+      background: var(--white);
+      padding: 0.85rem 1rem;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .skill:hover {
+      border-color: var(--accent);
+      background: #f0faf8;
+    }
+
+    .skill strong {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--steel);
+      margin-bottom: 0.2rem;
+      font-family: var(--sans);
+    }
+
+    .skill span { color: var(--steel-dim); }
+
+    /* PORTFOLIO — PS sessions */
+    .portfolio { background: var(--bg); }
+
+    .term-grid {
+      display: grid;
+      gap: 1.25rem;
+    }
+
+    @media (min-width: 720px) {
+      .term-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    .term-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      overflow: hidden;
+      transition: border-color 0.25s, transform 0.25s;
+    }
+
+    .term-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-3px);
+    }
+
+    .term-card.wide {
+      grid-column: 1 / -1;
+    }
+
+    .term-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--line);
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      background: var(--white);
+    }
+
+    .term-meta .tag {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .term-meta .file {
+      color: var(--steel-dim);
+    }
+
+    .term-body {
+      background: var(--ps-blue);
+      color: #d4e4f4;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      padding: 1rem;
+      min-height: 160px;
+      line-height: 1.5;
+      position: relative;
+    }
+
+    .term-body.placeholder-mode::after {
+      content: attr(data-placeholder);
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 1.5rem;
+      background: rgba(1, 36, 86, 0.88);
+      color: #8eb4d4;
+      font-size: 0.75rem;
+      line-height: 1.45;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+
+    .term-card:hover .term-body.placeholder-mode::after {
+      opacity: 1;
+    }
+
+    .term-body .line-prompt { color: #fff; }
+    .term-body .line-cmd { color: #7dd3c0; }
+    .term-body .line-out { color: #9bb4cc; }
+    .term-body .line-warn { color: #e8a878; }
+
+    .term-actions {
+      padding: 0.65rem 1rem;
+      display: flex;
+      gap: 0.5rem;
+      background: var(--white);
+      border-top: 1px solid var(--line);
+    }
+
+    .term-actions button {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      padding: 0.4rem 0.7rem;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--steel);
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .term-actions button:hover {
+      border-color: var(--accent);
+      background: #e6f5f3;
+    }
+
+    /* services strip */
+    .stack {
+      background: var(--steel);
+      color: #dce4ec;
+    }
+
+    .stack .section-kicker { color: var(--accent); }
+    .stack .section-title { color: #fff; }
+    .stack .section-lead { color: #9aabbc; }
+
+    .stack-list {
+      display: grid;
+      gap: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .stack-item {
+      display: grid;
+      grid-template-columns: 4rem 1fr;
+      gap: 1rem;
+      padding: 1.15rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      font-size: 0.95rem;
+    }
+
+    .stack-item code {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--accent);
+    }
+
+    .stack-item p { color: #9aabbc; font-size: 0.88rem; margin-top: 0.25rem; }
+
+    /* contact */
+    .contact {
+      background: var(--panel);
+      border-top: 1px solid var(--line);
+      text-align: center;
+    }
+
+    .contact .section-title { margin-inline: auto; max-width: none; }
+    .contact .section-lead { margin-inline: auto; }
+
+    .contact-form {
+      max-width: 420px;
+      margin: 0 auto;
+      display: grid;
+      gap: 0.75rem;
+      text-align: left;
+    }
+
+    .contact-form label {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--steel-dim);
+    }
+
+    .contact-form input,
+    .contact-form textarea {
+      width: 100%;
+      padding: 0.7rem 0.85rem;
+      border: 1px solid var(--line);
+      background: var(--white);
+      font-family: var(--sans);
+      font-size: 0.9rem;
+      color: var(--steel);
+      resize: vertical;
+    }
+
+    .contact-form input:focus,
+    .contact-form textarea:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: 1px;
+    }
+
+    .form-note {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--accent);
+      min-height: 1.2em;
+    }
+
+    .links-row {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 1.75rem;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+    }
+
+    .links-row a {
+      color: var(--accent);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+
+    .links-row a:hover { border-color: var(--accent); }
+
+    footer {
+      padding: 1rem var(--pad);
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--steel-dim);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      border-top: 1px solid var(--line);
+      background: var(--white);
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 1.25rem;
+      right: 1.25rem;
+      background: var(--steel);
+      color: #fff;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      padding: 0.75rem 1rem;
+      z-index: 100;
+      transform: translateY(120%);
+      opacity: 0;
+      transition: transform 0.3s, opacity 0.3s;
+      max-width: 280px;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <a class="topbar-brand" href="#top">PS C:\Users\igor&gt;</a>
+    <nav>
+      <a href="#about">/about</a>
+      <a href="#labs">/labs</a>
+      <a href="#stack">/stack</a>
+      <a href="#contact">/contact</a>
+    </nav>
+  </div>
+
+  <header class="hero" id="top">
+    <div class="hero-copy">
+      <p class="status-pill">host online · uptime 99.97%</p>
+      <p class="brand">Игорь<em>Семёнов</em></p>
+      <h1>Системный администратор</h1>
+      <p class="hero-lead">Windows Server, Active Directory, автоматизация на PowerShell и инфраструктура, которая не будит среди ночи.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#labs">Сессии PowerShell</a>
+        <a class="btn btn-outline" href="#contact">Связаться</a>
+      </div>
+    </div>
+    <div class="hero-terminal" aria-hidden="true">
+      <div class="ps-window">
+        <div class="ps-titlebar">
+          <span>Windows PowerShell</span>
+          <div class="ps-dots"><span></span><span></span><span></span></div>
+        </div>
+        <div class="ps-body" id="hero-type">
+          <span class="ps-prompt">PS C:\Infrastructure&gt; </span><span class="ps-cursor" id="hero-cursor"></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="about" id="about">
+    <div class="reveal">
+      <p class="section-kicker">// profile</p>
+      <h2 class="section-title">Держу инфраструктуру предсказуемой</h2>
+      <p class="section-lead">10+ лет с Windows-стеком: домены, GPO, мониторинг, бэкапы, патчинг и скрипты, которые экономят часы рутины каждую неделю.</p>
+    </div>
+    <div class="skill-grid reveal">
+      <div class="skill"><strong>Active Directory</strong><span>Forest / GPO / RBAC</span></div>
+      <div class="skill"><strong>PowerShell 5 &amp; 7</strong><span>DSC · remoting · CI</span></div>
+      <div class="skill"><strong>Hyper-V / VMware</strong><span>кластеры · HA</span></div>
+      <div class="skill"><strong>Monitoring</strong><span>Zabbix · Grafana</span></div>
+      <div class="skill"><strong>Backup</strong><span>Veeam · политика RPO</span></div>
+      <div class="skill"><strong>Hardening</strong><span>CIS · baseline</span></div>
+    </div>
+  </section>
+
+  <section class="portfolio" id="labs">
+    <p class="section-kicker reveal">// portfolio</p>
+    <h2 class="section-title reveal">Лабораторные сессии</h2>
+    <p class="section-lead reveal">Заглушки под ваши реальные логи PowerShell. Наведите на блок — подсказка по вставке. Кнопка «Копировать» снимает пример в буфер.</p>
+
+    <div class="term-grid">
+      <article class="term-card reveal">
+        <div class="term-meta">
+          <span class="tag">AD · audit</span>
+          <span class="file">Get-ADUser.ps1</span>
+        </div>
+        <pre class="term-body placeholder-mode" data-placeholder="ЗАГЛУШКА&#10;Вставьте сюда вывод своей команды PowerShell&#10;(замените текст внутри &lt;pre class=&quot;term-body&quot;&gt;)"><span class="line-prompt">PS C:\AD&gt; </span><span class="line-cmd">Get-ADUser -Filter * -Properties LastLogonDate |
+  Where-Object { $_.LastLogonDate -lt (Get-Date).AddDays(-90) } |
+  Select-Object Name, SamAccountName, LastLogonDate</span>
+<span class="line-out">
+Name            SamAccountName LastLogonDate
+----            -------------- -------------
+… [вставьте свой вывод] …</span></pre>
+        <div class="term-actions">
+          <button type="button" data-copy>Копировать пример</button>
+        </div>
+      </article>
+
+      <article class="term-card reveal">
+        <div class="term-meta">
+          <span class="tag">Health · disk</span>
+          <span class="file">Get-Volume.ps1</span>
+        </div>
+        <pre class="term-body placeholder-mode" data-placeholder="ЗАГЛУШКА&#10;Скрин или текст: Get-Volume / Get-PhysicalDisk&#10;из вашей среды"><span class="line-prompt">PS C:\Health&gt; </span><span class="line-cmd">Get-Volume | Where-Object DriveLetter |
+  Format-Table DriveLetter, FileSystemLabel, @{N='FreeGB';E={[math]::Round($_.SizeRemaining/1GB,1)}}, HealthStatus -AutoSize</span>
+<span class="line-out">
+DriveLetter FileSystemLabel FreeGB HealthStatus
+----------- --------------- ------ ------------
+… [пример дисков] …</span></pre>
+        <div class="term-actions">
+          <button type="button" data-copy>Копировать пример</button>
+        </div>
+      </article>
+
+      <article class="term-card reveal">
+        <div class="term-meta">
+          <span class="tag">Security</span>
+          <span class="file">EventLog-Filter.ps1</span>
+        </div>
+        <pre class="term-body placeholder-mode" data-placeholder="ЗАГЛУШКА&#10;Вставьте фильтр Event Log / failed logons&#10;из вашего инцидента или отчёта"><span class="line-prompt">PS C:\Sec&gt; </span><span class="line-cmd">Get-WinEvent -FilterHashtable @{LogName='Security'; Id=4625; StartTime=(Get-Date).AddHours(-24)} |
+  Group-Object -Property { $_.Properties[5].Value } |
+  Sort-Object Count -Descending | Select-Object -First 10</span>
+<span class="line-warn">
+Count Name
+----- ----
+… [топ неудачных входов] …</span></pre>
+        <div class="term-actions">
+          <button type="button" data-copy>Копировать пример</button>
+        </div>
+      </article>
+
+      <article class="term-card reveal">
+        <div class="term-meta">
+          <span class="tag">Automation</span>
+          <span class="file">Invoke-PatchCycle.ps1</span>
+        </div>
+        <pre class="term-body placeholder-mode" data-placeholder="ЗАГЛУШКА&#10;Сюда — ваш скрипт патчинга / Invokе-Command&#10;по парку серверов"><span class="line-prompt">PS C:\Patch&gt; </span><span class="line-cmd">$servers = Get-Content .\hosts.txt
+Invoke-Command -ComputerName $servers -ScriptBlock {
+  Get-HotFix | Sort-Object InstalledOn -Descending | Select-Object -First 3
+}</span>
+<span class="line-out">
+… [результаты с узлов] …</span></pre>
+        <div class="term-actions">
+          <button type="button" data-copy>Копировать пример</button>
+        </div>
+      </article>
+
+      <article class="term-card wide reveal">
+        <div class="term-meta">
+          <span class="tag">DSC · config</span>
+          <span class="file">WebNode.ps1 · широкая заглушка</span>
+        </div>
+        <pre class="term-body placeholder-mode" data-placeholder="ЗАГЛУШКА ПОД ПОЛНЫЙ СКРИПТ&#10;Вставьте сюда Desired State Configuration или длинный runbook&#10;Можно заменить весь &lt;pre&gt; на &lt;img&gt; скриншота терминала"><span class="line-prompt">PS C:\DSC&gt; </span><span class="line-cmd">Configuration WebNode {
+  Import-DscResource -ModuleName PSDesiredStateConfiguration
+  Node 'WEB-01' {
+    WindowsFeature IIS { Name = 'Web-Server'; Ensure = 'Present' }
+    File SiteRoot {
+      DestinationPath = 'C:\inetpub\wwwroot\app'
+      Type = 'Directory'
+      Ensure = 'Present'
+    }
+  }
+}
+WebNode -OutputPath C:\DSC\MOF
+Start-DscConfiguration -Path C:\DSC\MOF -Wait -Verbose</span>
+<span class="line-out">
+VERBOSE: [WEB-01]: LCM:  [ Start  Resource ] …
+… [вставьте свой лог применения конфигурации] …</span></pre>
+        <div class="term-actions">
+          <button type="button" data-copy>Копировать пример</button>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="stack" id="stack">
+    <p class="section-kicker reveal">// services</p>
+    <h2 class="section-title reveal">Чем могу помочь</h2>
+    <p class="section-lead reveal">Аудит, стабилизация и автоматизация — без лишней магии.</p>
+    <div class="stack-list">
+      <div class="stack-item reveal">
+        <code>01</code>
+        <div>
+          <strong>Аудит AD и прав</strong>
+          <p>Мёртвые учётки, раздутые группы, GPO-спагетти — навожу порядок.</p>
+        </div>
+      </div>
+      <div class="stack-item reveal">
+        <code>02</code>
+        <div>
+          <strong>Автоматизация PowerShell</strong>
+          <p>Отчёты, онбординг, патчинг, remoting — скрипты под ваш процесс.</p>
+        </div>
+      </div>
+      <div class="stack-item reveal">
+        <code>03</code>
+        <div>
+          <strong>Мониторинг и бэкапы</strong>
+          <p>Алерты, которые имеют смысл, и бэкапы, которые реально восстанавливаются.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact" id="contact">
+    <p class="section-kicker reveal">// contact</p>
+    <h2 class="section-title reveal">Открыть тикет</h2>
+    <p class="section-lead reveal">Кратко опишите задачу — отвечу с оценкой и следующим шагом.</p>
+    <form class="contact-form reveal" id="contact-form">
+      <div>
+        <label for="name">Имя</label>
+        <input id="name" name="name" type="text" required placeholder="Как к вам обращаться" />
+      </div>
+      <div>
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" required placeholder="you@company.ru" />
+      </div>
+      <div>
+        <label for="msg">Сообщение</label>
+        <textarea id="msg" name="msg" rows="4" required placeholder="Серверы, AD, срочность…"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary" style="justify-self: start;">Отправить</button>
+      <p class="form-note" id="form-note" aria-live="polite"></p>
+    </form>
+    <div class="links-row reveal">
+      <a href="mailto:igor@example.com">igor@example.com</a>
+      <a href="https://t.me/" target="_blank" rel="noopener">Telegram</a>
+      <a href="https://github.com/" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </section>
+
+  <footer>
+    <span>© <span id="year"></span> Игорь Семёнов · SysAdmin</span>
+    <span>exit 0</span>
+  </footer>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Hero typing animation
+    const heroType = document.getElementById("hero-type");
+    const lines = [
+      { prompt: true, text: "Get-Service -Name Wuauserv, WinRM | Format-Table -AutoSize" },
+      { out: true, text: "\n\nStatus  Name     DisplayName\n------  ----     -----------\nRunning Wuauserv Windows Update\nRunning WinRM    Windows Remote Management\n" },
+      { prompt: true, text: "Test-Connection DC-01 -Count 2" },
+      { out: true, text: "\n\nSource  Destination  IPV4Address   Status\n------  -----------  -----------   ------\nHOST    DC-01         10.0.0.11     Success\nHOST    DC-01         10.0.0.11     Success\n" },
+      { prompt: true, text: "" },
+    ];
+
+    async function typeHero() {
+      heroType.innerHTML = "";
+      for (const line of lines) {
+        if (line.prompt) {
+          const p = document.createElement("span");
+          p.className = "ps-prompt";
+          p.textContent = "PS C:\\Infrastructure> ";
+          heroType.appendChild(p);
+          const c = document.createElement("span");
+          c.className = "ps-cmd";
+          heroType.appendChild(c);
+          for (const ch of line.text) {
+            c.textContent += ch;
+            await wait(18 + Math.random() * 22);
+          }
+        } else if (line.out) {
+          const o = document.createElement("span");
+          o.className = "ps-out";
+          heroType.appendChild(o);
+          for (const ch of line.text) {
+            o.textContent += ch;
+            await wait(4);
+          }
+        }
+        heroType.appendChild(document.createElement("br"));
+      }
+      const cursor = document.createElement("span");
+      cursor.className = "ps-cursor";
+      heroType.appendChild(cursor);
+    }
+
+    function wait(ms) {
+      return new Promise((r) => setTimeout(r, ms));
+    }
+
+    typeHero();
+
+    // Reveal on scroll
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add("visible");
+            io.unobserve(e.target);
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+    document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+
+    // Copy terminal samples
+    const toast = document.getElementById("toast");
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add("show");
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+
+    document.querySelectorAll("[data-copy]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const pre = btn.closest(".term-card").querySelector(".term-body");
+        try {
+          await navigator.clipboard.writeText(pre.innerText);
+          showToast("Скопировано в буфер обмена");
+        } catch {
+          showToast("Не удалось скопировать — выделите текст вручную");
+        }
+      });
+    });
+
+    // Demo form
+    document.getElementById("contact-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const note = document.getElementById("form-note");
+      note.textContent = "> ticket queued · замените form action на свой endpoint";
+      e.target.reset();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Алина Воронова — графический дизайнер</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #12100e;
+      --paper: #f2ebe0;
+      --cadmium: #e85d04;
+      --cobalt: #1d4e89;
+      --chalk: #faf7f2;
+      --mute: #6b6358;
+      --gap: clamp(1.25rem, 3vw, 2.5rem);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: "Manrope", sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      line-height: 1.55;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* grain atmosphere */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.07;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem var(--gap);
+      mix-blend-mode: difference;
+      color: #fff;
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .nav-links { display: flex; gap: 1.5rem; }
+    .nav-links a { opacity: 0.75; transition: opacity 0.25s; }
+    .nav-links a:hover { opacity: 1; }
+
+    /* HERO — one composition */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: 1fr auto;
+      position: relative;
+      background:
+        radial-gradient(ellipse 80% 60% at 70% 40%, rgba(232, 93, 4, 0.35), transparent 55%),
+        radial-gradient(ellipse 50% 50% at 15% 80%, rgba(29, 78, 137, 0.25), transparent 50%),
+        linear-gradient(165deg, #1a1612 0%, #2a2218 45%, #0f0d0b 100%);
+      color: var(--chalk);
+      overflow: hidden;
+    }
+
+    .hero-visual {
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(
+          -12deg,
+          transparent,
+          transparent 48px,
+          rgba(250, 247, 242, 0.03) 48px,
+          rgba(250, 247, 242, 0.03) 49px
+        );
+    }
+
+    .hero-mark {
+      position: absolute;
+      right: -5%;
+      top: 8%;
+      width: min(55vw, 520px);
+      aspect-ratio: 3 / 4;
+      border: 2px solid rgba(250, 247, 242, 0.2);
+      background:
+        linear-gradient(145deg, rgba(232, 93, 4, 0.4), transparent 60%),
+        linear-gradient(to bottom, #3d2e1f, #1a1410);
+      transform: rotate(4deg);
+      animation: floatMark 9s ease-in-out infinite;
+    }
+
+    .hero-mark::after {
+      content: "PLACEHOLDER · ARTWORK";
+      position: absolute;
+      inset: 12%;
+      border: 1px dashed rgba(250, 247, 242, 0.35);
+      display: grid;
+      place-items: center;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      color: rgba(250, 247, 242, 0.45);
+      text-align: center;
+      padding: 1rem;
+    }
+
+    @keyframes floatMark {
+      0%, 100% { transform: rotate(4deg) translateY(0); }
+      50% { transform: rotate(2deg) translateY(-12px); }
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 2;
+      padding: clamp(5rem, 12vh, 8rem) var(--gap) 2rem;
+      max-width: 720px;
+      animation: riseIn 1s ease both;
+    }
+
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(28px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .brand {
+      font-family: "Archivo Black", sans-serif;
+      font-size: clamp(3.2rem, 11vw, 7.5rem);
+      line-height: 0.9;
+      letter-spacing: -0.03em;
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+    }
+
+    .brand span {
+      display: block;
+      color: var(--cadmium);
+    }
+
+    .hero h1 {
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: clamp(1.05rem, 2.2vw, 1.35rem);
+      max-width: 28ch;
+      margin-bottom: 0.75rem;
+      color: var(--chalk);
+    }
+
+    .hero-lead {
+      color: rgba(250, 247, 242, 0.65);
+      max-width: 36ch;
+      font-size: 0.95rem;
+      margin-bottom: 2rem;
+    }
+
+    .cta-row { display: flex; flex-wrap: wrap; gap: 0.85rem; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 1.4rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.25s, background 0.25s, color 0.25s;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+
+    .btn-primary {
+      background: var(--cadmium);
+      color: var(--ink);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--chalk);
+      border: 1px solid rgba(250, 247, 242, 0.35);
+    }
+
+    .btn-ghost:hover { border-color: var(--chalk); }
+
+    .hero-foot {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding: 1.5rem var(--gap) 2rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(250, 247, 242, 0.45);
+      border-top: 1px solid rgba(250, 247, 242, 0.1);
+    }
+
+    .scroll-hint {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .scroll-hint::before {
+      content: "";
+      width: 28px;
+      height: 1px;
+      background: currentColor;
+      animation: pulseLine 2s ease infinite;
+    }
+
+    @keyframes pulseLine {
+      0%, 100% { width: 28px; opacity: 0.4; }
+      50% { width: 48px; opacity: 1; }
+    }
+
+    section {
+      padding: clamp(3.5rem, 8vw, 6rem) var(--gap);
+    }
+
+    .section-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-family: "Archivo Black", sans-serif;
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      line-height: 1;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+      max-width: 14ch;
+    }
+
+    .section-lead {
+      color: var(--mute);
+      max-width: 42ch;
+      margin-bottom: 2.5rem;
+    }
+
+    /* ABOUT */
+    .about {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+      background: var(--chalk);
+    }
+
+    @media (min-width: 800px) {
+      .about {
+        grid-template-columns: 1fr 1.1fr;
+        align-items: end;
+      }
+    }
+
+    .about-text p + p { margin-top: 1rem; }
+
+    .about-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      border-top: 2px solid var(--ink);
+      padding-top: 1.5rem;
+    }
+
+    .about-stats strong {
+      display: block;
+      font-family: "Archivo Black", sans-serif;
+      font-size: 1.8rem;
+      color: var(--cadmium);
+    }
+
+    .about-stats span {
+      font-size: 0.75rem;
+      color: var(--mute);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* PORTFOLIO placeholders */
+    .portfolio {
+      background: var(--paper);
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    @media (min-width: 640px) {
+      .gallery { grid-template-columns: repeat(2, 1fr); }
+      .gallery .slot:nth-child(1) { grid-row: span 2; min-height: 420px; }
+    }
+
+    @media (min-width: 960px) {
+      .gallery { grid-template-columns: repeat(3, 1fr); grid-auto-rows: 220px; }
+      .gallery .slot:nth-child(1) { grid-row: span 2; min-height: auto; }
+      .gallery .slot:nth-child(4) { grid-column: span 2; }
+    }
+
+    .slot {
+      position: relative;
+      min-height: 200px;
+      background: #ddd4c6;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.35s ease;
+    }
+
+    .slot:hover { transform: scale(1.015); }
+
+    .slot-inner {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 1.25rem;
+      background:
+        linear-gradient(160deg, rgba(18, 16, 14, 0.05), rgba(18, 16, 14, 0.35)),
+        repeating-conic-gradient(from 0deg at 50% 50%, #e8dfd0 0deg 10deg, #d9cfc0 10deg 20deg);
+    }
+
+    .slot:nth-child(2) .slot-inner {
+      background:
+        linear-gradient(200deg, rgba(29, 78, 137, 0.35), rgba(18, 16, 14, 0.5)),
+        radial-gradient(circle at 30% 40%, #f2ebe0 0%, transparent 50%),
+        #2a3a4a;
+    }
+
+    .slot:nth-child(3) .slot-inner {
+      background:
+        linear-gradient(180deg, transparent 40%, rgba(18, 16, 14, 0.6)),
+        radial-gradient(ellipse at 70% 30%, var(--cadmium), transparent 55%),
+        #1a1612;
+      color: var(--chalk);
+    }
+
+    .slot:nth-child(4) .slot-inner {
+      background:
+        linear-gradient(90deg, #c4b8a5 0%, #ebe3d6 50%, #a89880 100%);
+    }
+
+    .slot:nth-child(5) .slot-inner {
+      background:
+        linear-gradient(135deg, var(--cobalt), #0d2a4a);
+      color: var(--chalk);
+    }
+
+    .slot-tag {
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      opacity: 0.7;
+    }
+
+    .slot-title {
+      font-family: "Archivo Black", sans-serif;
+      font-size: 1.15rem;
+      text-transform: uppercase;
+      line-height: 1.1;
+    }
+
+    .slot-hint {
+      font-size: 0.75rem;
+      opacity: 0.55;
+      margin-top: 0.35rem;
+    }
+
+    .slot img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .slot.has-image .slot-inner { display: none; }
+    .slot.has-image img { display: block; }
+
+    /* SERVICES */
+    .services {
+      background: var(--ink);
+      color: var(--chalk);
+    }
+
+    .services .section-label { color: rgba(250, 247, 242, 0.45); }
+    .services .section-lead { color: rgba(250, 247, 242, 0.55); }
+
+    .service-list {
+      display: grid;
+      gap: 0;
+      border-top: 1px solid rgba(250, 247, 242, 0.15);
+    }
+
+    .service-item {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 1.5rem;
+      align-items: baseline;
+      padding: 1.4rem 0;
+      border-bottom: 1px solid rgba(250, 247, 242, 0.15);
+      transition: padding-left 0.3s;
+    }
+
+    .service-item:hover { padding-left: 0.75rem; }
+
+    .service-num {
+      font-family: "Archivo Black", sans-serif;
+      color: var(--cadmium);
+      font-size: 0.9rem;
+    }
+
+    .service-item h3 {
+      font-family: "Archivo Black", sans-serif;
+      font-size: clamp(1.2rem, 3vw, 1.8rem);
+      text-transform: uppercase;
+    }
+
+    .service-item p {
+      grid-column: 2;
+      color: rgba(250, 247, 242, 0.5);
+      font-size: 0.9rem;
+      max-width: 40ch;
+    }
+
+    /* CONTACT */
+    .contact {
+      background: var(--cadmium);
+      color: var(--ink);
+      text-align: center;
+    }
+
+    .contact .section-title {
+      max-width: none;
+      margin-inline: auto;
+    }
+
+    .contact .section-lead {
+      margin-inline: auto;
+      color: rgba(18, 16, 14, 0.7);
+    }
+
+    .contact-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .contact-links a {
+      padding: 0.9rem 1.5rem;
+      background: var(--ink);
+      color: var(--chalk);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: background 0.25s, transform 0.25s;
+    }
+
+    .contact-links a:hover {
+      background: var(--cobalt);
+      transform: translateY(-2px);
+    }
+
+    footer {
+      padding: 1.25rem var(--gap);
+      background: var(--ink);
+      color: rgba(250, 247, 242, 0.4);
+      font-size: 0.75rem;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    /* lightbox */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(18, 16, 14, 0.92);
+      display: none;
+      place-items: center;
+      padding: 2rem;
+    }
+
+    .lightbox.open { display: grid; }
+
+    .lightbox-panel {
+      background: var(--paper);
+      color: var(--ink);
+      max-width: 480px;
+      width: 100%;
+      padding: 2rem;
+      animation: riseIn 0.35s ease;
+    }
+
+    .lightbox-panel h3 {
+      font-family: "Archivo Black", sans-serif;
+      text-transform: uppercase;
+      font-size: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .lightbox-panel p {
+      color: var(--mute);
+      margin-bottom: 1.5rem;
+      font-size: 0.95rem;
+    }
+
+    .lightbox-close {
+      background: var(--ink);
+      color: var(--chalk);
+      border: none;
+      padding: 0.7rem 1.2rem;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a href="#top">AV · Studio</a>
+    <div class="nav-links">
+      <a href="#works">Работы</a>
+      <a href="#services">Услуги</a>
+      <a href="#contact">Контакт</a>
+    </div>
+  </nav>
+
+  <header class="hero" id="top">
+    <div class="hero-visual" aria-hidden="true"></div>
+    <div class="hero-mark" aria-hidden="true"></div>
+    <div class="hero-copy">
+      <p class="brand">Алина<br /><span>Воронова</span></p>
+      <h1>Графический дизайнер и художник</h1>
+      <p class="hero-lead">Плакаты, айдентика и иллюстрация — образы, которые остаются на сетчатке.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#works">Смотреть работы</a>
+        <a class="btn btn-ghost" href="#contact">Написать</a>
+      </div>
+    </div>
+    <div class="hero-foot">
+      <span>Москва · freelance</span>
+      <span class="scroll-hint">вниз к портфолио</span>
+    </div>
+  </header>
+
+  <section class="about" id="about">
+    <div class="reveal">
+      <p class="section-label">Обо мне</p>
+      <h2 class="section-title">Рисую так, чтобы бренд звучал громче слов</h2>
+    </div>
+    <div class="about-text reveal">
+      <p>Работаю на стыке ручной графики и цифрового дизайна: от скетчей тушью до системных гайдлайнов. Люблю крупные формы, смелые цветовые пятна и типографику как самостоятельный персонаж.</p>
+      <p>Среди клиентов — независимые лейблы, культурные площадки и небольшие бренды, которым нужен характер, а не шаблон.</p>
+      <div class="about-stats">
+        <div><strong>7+</strong><span>лет практики</span></div>
+        <div><strong>90+</strong><span>проектов</span></div>
+        <div><strong>12</strong><span>выставок</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="portfolio" id="works">
+    <p class="section-label reveal">Портфолио</p>
+    <h2 class="section-title reveal">Избранные работы</h2>
+    <p class="section-lead reveal">Сюда вставьте свои рисунки и макеты — кликните по заглушке, чтобы увидеть подсказку по замене.</p>
+
+    <div class="gallery">
+      <article class="slot reveal" data-title="Серия плакатов «Тень»" data-hint="Замените фон блока на своё изображение: &lt;img src=&quot;works/poster-01.jpg&quot; alt=&quot;...&quot;&gt; и добавьте класс has-image на .slot">
+        <div class="slot-inner">
+          <span class="slot-tag">01 · плакат</span>
+          <div>
+            <p class="slot-title">Серия «Тень»</p>
+            <p class="slot-hint">Заглушка: вставьте рисунок / JPG / PNG</p>
+          </div>
+        </div>
+        <!-- <img src="works/poster-01.jpg" alt="Плакат серии Тень" /> -->
+      </article>
+
+      <article class="slot reveal" data-title="Айдентика кафе" data-hint="Положите файл в папку works/ и раскомментируйте тег img внутри этого .slot">
+        <div class="slot-inner">
+          <span class="slot-tag">02 · айдентика</span>
+          <div>
+            <p class="slot-title">Brand kit</p>
+            <p class="slot-hint">Заглушка под логотип / фирстиль</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="slot reveal" data-title="Иллюстрация обложки" data-hint="Рекомендуемый размер: 1600×2000 px, формат WebP или PNG">
+        <div class="slot-inner">
+          <span class="slot-tag">03 · иллюстрация</span>
+          <div>
+            <p class="slot-title">Book cover</p>
+            <p class="slot-hint">Заглушка под иллюстрацию</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="slot reveal" data-title="Цифровой коллаж" data-hint="Можно вставить несколько работ горизонтальным рядом — этот слот шире">
+        <div class="slot-inner">
+          <span class="slot-tag">04 · коллаж</span>
+          <div>
+            <p class="slot-title">Digital collage</p>
+            <p class="slot-hint">Заглушка: широкий кадр</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="slot reveal" data-title="Эскизы тушью" data-hint="Скан или фото эскизов — object-fit: cover обрежет края аккуратно">
+        <div class="slot-inner">
+          <span class="slot-tag">05 · скетч</span>
+          <div>
+            <p class="slot-title">Ink studies</p>
+            <p class="slot-hint">Заглушка под скетчи</p>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="services" id="services">
+    <p class="section-label reveal">Услуги</p>
+    <h2 class="section-title reveal" style="color: var(--chalk)">Что делаю</h2>
+    <p class="section-lead reveal">От одной иллюстрации до полной визуальной системы.</p>
+    <div class="service-list">
+      <div class="service-item reveal">
+        <span class="service-num">01</span>
+        <div>
+          <h3>Айдентика</h3>
+          <p>Логотип, палитра, типографика и гайд для носителей.</p>
+        </div>
+      </div>
+      <div class="service-item reveal">
+        <span class="service-num">02</span>
+        <div>
+          <h3>Плакаты и печать</h3>
+          <p>Афиши, серии постеров, упаковка, мерч.</p>
+        </div>
+      </div>
+      <div class="service-item reveal">
+        <span class="service-num">03</span>
+        <div>
+          <h3>Иллюстрация</h3>
+          <p>Обложки, редакционная графика, персонажи.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact" id="contact">
+    <p class="section-label reveal" style="color: rgba(18,16,14,0.55)">Контакт</p>
+    <h2 class="section-title reveal">Давайте сделаем шум</h2>
+    <p class="section-lead reveal">Расскажите о проекте — отвечу в течение дня.</p>
+    <div class="contact-links reveal">
+      <a href="mailto:alina@example.com">alina@example.com</a>
+      <a href="https://t.me/" target="_blank" rel="noopener">Telegram</a>
+      <a href="https://www.behance.net/" target="_blank" rel="noopener">Behance</a>
+    </div>
+  </section>
+
+  <footer>
+    <span>© <span id="year"></span> Алина Воронова</span>
+    <span>Один файл · index.html</span>
+  </footer>
+
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-labelledby="lb-title">
+    <div class="lightbox-panel">
+      <h3 id="lb-title"></h3>
+      <p id="lb-hint"></p>
+      <button type="button" class="lightbox-close" id="lb-close">Закрыть</button>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    const reveals = document.querySelectorAll(".reveal");
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add("visible");
+            io.unobserve(e.target);
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
+    reveals.forEach((el) => io.observe(el));
+
+    const lightbox = document.getElementById("lightbox");
+    const lbTitle = document.getElementById("lb-title");
+    const lbHint = document.getElementById("lb-hint");
+
+    document.querySelectorAll(".slot").forEach((slot) => {
+      slot.addEventListener("click", () => {
+        lbTitle.textContent = slot.dataset.title || "Работа";
+        lbHint.textContent = slot.dataset.hint || "Вставьте своё изображение в этот блок.";
+        lightbox.classList.add("open");
+      });
+    });
+
+    function closeLb() {
+      lightbox.classList.remove("open");
+    }
+
+    document.getElementById("lb-close").addEventListener("click", closeLb);
+    lightbox.addEventListener("click", (e) => {
+      if (e.target === lightbox) closeLb();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeLb();
+    });
+
+    // parallax on hero mark
+    const mark = document.querySelector(".hero-mark");
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (!mark) return;
+        const y = window.scrollY * 0.12;
+        mark.style.translate = `0 ${y}px`;
+      },
+      { passive: true }
+    );
+  </script>
+</body>
+</html>

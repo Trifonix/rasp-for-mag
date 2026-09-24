@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Мария Ковалёва — ML-инженер</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --deep: #0b2e2a;
+      --mid: #145c54;
+      --foam: #e8f4f1;
+      --sand: #f4efe6;
+      --ink: #14221f;
+      --mute: #5a6e69;
+      --coral: #d4654a;
+      --mint: #7bc4b2;
+      --pad: clamp(1.25rem, 4vw, 3rem);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: "Sora", sans-serif;
+      color: var(--ink);
+      background: var(--sand);
+      line-height: 1.55;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* organic blob atmosphere */
+    .blobs {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .blob {
+      position: absolute;
+      border-radius: 40% 60% 55% 45%;
+      filter: blur(40px);
+      opacity: 0.35;
+      animation: morph 14s ease-in-out infinite;
+    }
+
+    .blob-a {
+      width: 45vw;
+      height: 45vw;
+      max-width: 480px;
+      max-height: 480px;
+      background: var(--mint);
+      top: -10%;
+      right: -8%;
+    }
+
+    .blob-b {
+      width: 35vw;
+      height: 35vw;
+      max-width: 360px;
+      max-height: 360px;
+      background: #c4ddd6;
+      bottom: 20%;
+      left: -10%;
+      animation-delay: -5s;
+    }
+
+    @keyframes morph {
+      0%, 100% { border-radius: 40% 60% 55% 45%; transform: translate(0, 0) rotate(0deg); }
+      33% { border-radius: 55% 45% 40% 60%; transform: translate(12px, -18px) rotate(8deg); }
+      66% { border-radius: 45% 55% 60% 40%; transform: translate(-10px, 10px) rotate(-4deg); }
+    }
+
+    .wrap { position: relative; z-index: 1; }
+
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 40;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem var(--pad);
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+    }
+
+    .nav-brand {
+      font-family: "Instrument Serif", serif;
+      font-size: 1.15rem;
+      letter-spacing: 0;
+      font-weight: 400;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.4rem;
+      color: var(--mute);
+    }
+
+    .nav-links a:hover { color: var(--deep); }
+
+    /* HERO — full-bleed field */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      position: relative;
+      color: var(--foam);
+      background:
+        radial-gradient(ellipse 70% 55% at 65% 35%, rgba(123, 196, 178, 0.35), transparent 60%),
+        radial-gradient(ellipse 50% 40% at 20% 70%, rgba(212, 101, 74, 0.2), transparent 50%),
+        linear-gradient(165deg, #0a2824 0%, #0f3d36 40%, #163f38 70%, #0b2e2a 100%);
+      overflow: hidden;
+      padding: 6rem var(--pad) 2.5rem;
+    }
+
+    .hero-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.55;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 720px;
+      animation: lift 1s ease both;
+    }
+
+    @keyframes lift {
+      from { opacity: 0; transform: translateY(32px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .brand {
+      font-family: "Instrument Serif", serif;
+      font-size: clamp(3.4rem, 10vw, 6.8rem);
+      line-height: 0.95;
+      font-weight: 400;
+      margin-bottom: 1.25rem;
+      letter-spacing: -0.02em;
+    }
+
+    .brand em {
+      font-style: italic;
+      color: var(--mint);
+      display: block;
+    }
+
+    .hero h1 {
+      font-family: "Sora", sans-serif;
+      font-weight: 400;
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      max-width: 32ch;
+      margin-bottom: 0.6rem;
+      color: var(--foam);
+    }
+
+    .hero-lead {
+      font-weight: 300;
+      color: rgba(232, 244, 241, 0.7);
+      max-width: 42ch;
+      font-size: 0.95rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .thesis-chip {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      color: rgba(232, 244, 241, 0.85);
+      border-left: 2px solid var(--coral);
+      padding-left: 0.85rem;
+      margin-bottom: 1.75rem;
+      max-width: 48ch;
+      line-height: 1.45;
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.85rem 1.35rem;
+      font-family: "Sora", sans-serif;
+      font-size: 0.8rem;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.25s, background 0.25s, color 0.25s;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+
+    .btn-fill {
+      background: var(--mint);
+      color: var(--deep);
+    }
+
+    .btn-line {
+      background: transparent;
+      color: var(--foam);
+      border: 1px solid rgba(232, 244, 241, 0.35);
+    }
+
+    .btn-line:hover { border-color: var(--foam); }
+
+    .hero-meta {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid rgba(232, 244, 241, 0.12);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(232, 244, 241, 0.45);
+    }
+
+    .gen-counter {
+      font-variant-numeric: tabular-nums;
+      color: var(--mint);
+    }
+
+    section {
+      padding: clamp(3.5rem, 8vw, 6rem) var(--pad);
+    }
+
+    .kicker {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--coral);
+      margin-bottom: 0.65rem;
+    }
+
+    .section-title {
+      font-family: "Instrument Serif", serif;
+      font-size: clamp(2rem, 4.5vw, 3.2rem);
+      font-weight: 400;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      max-width: 16ch;
+      margin-bottom: 0.85rem;
+    }
+
+    .section-lead {
+      color: var(--mute);
+      max-width: 46ch;
+      font-weight: 300;
+      margin-bottom: 2.25rem;
+      font-size: 0.95rem;
+    }
+
+    /* RESEARCH */
+    .research {
+      background: var(--foam);
+      display: grid;
+      gap: 2.5rem;
+    }
+
+    @media (min-width: 860px) {
+      .research {
+        grid-template-columns: 1fr 1.15fr;
+        align-items: center;
+      }
+    }
+
+    .research-points {
+      display: grid;
+      gap: 1.25rem;
+    }
+
+    .point {
+      padding-left: 1rem;
+      border-left: 2px solid var(--mid);
+    }
+
+    .point h3 {
+      font-family: "Instrument Serif", serif;
+      font-size: 1.25rem;
+      font-weight: 400;
+      margin-bottom: 0.3rem;
+    }
+
+    .point p {
+      font-size: 0.88rem;
+      color: var(--mute);
+      font-weight: 300;
+    }
+
+    /* SIMULATIONS — GIF placeholders */
+    .sims {
+      background: var(--sand);
+    }
+
+    .sim-grid {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    @media (min-width: 700px) {
+      .sim-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .sim-card.featured {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: 1.4fr 1fr;
+        gap: 0;
+      }
+    }
+
+    .sim-card {
+      background: var(--foam);
+      overflow: hidden;
+      transition: transform 0.35s ease;
+    }
+
+    .sim-card:hover { transform: translateY(-4px); }
+
+    .sim-stage {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      background: var(--deep);
+      overflow: hidden;
+    }
+
+    .sim-card.featured .sim-stage {
+      aspect-ratio: auto;
+      min-height: 280px;
+      height: 100%;
+    }
+
+    /* CSS placeholder animation mimicking evolution sim */
+    .sim-placeholder {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+    }
+
+    .sim-placeholder canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .sim-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 1rem 1.15rem;
+      background: linear-gradient(180deg, rgba(11, 46, 42, 0.15), transparent 30%, rgba(11, 46, 42, 0.75));
+      color: var(--foam);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .sim-card:hover .sim-overlay,
+    .sim-stage:focus-within .sim-overlay {
+      opacity: 1;
+    }
+
+    /* always show a light hint bar */
+    .sim-badge {
+      position: absolute;
+      top: 0.85rem;
+      left: 0.85rem;
+      z-index: 2;
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--mint);
+      background: rgba(11, 46, 42, 0.65);
+      padding: 0.35rem 0.6rem;
+    }
+
+    .gif-slot {
+      position: absolute;
+      inset: 0;
+      display: none;
+    }
+
+    .gif-slot img,
+    .gif-slot video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .sim-stage.has-gif .sim-placeholder { display: none; }
+    .sim-stage.has-gif .gif-slot { display: block; }
+
+    .sim-info {
+      padding: 1.25rem 1.35rem 1.5rem;
+    }
+
+    .sim-info h3 {
+      font-family: "Instrument Serif", serif;
+      font-size: 1.35rem;
+      font-weight: 400;
+      margin-bottom: 0.4rem;
+    }
+
+    .sim-info p {
+      font-size: 0.85rem;
+      color: var(--mute);
+      font-weight: 300;
+      margin-bottom: 0.75rem;
+    }
+
+    .sim-hint {
+      font-size: 0.72rem;
+      color: var(--coral);
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    .sim-hint code {
+      font-family: "Sora", sans-serif;
+      font-size: 0.68rem;
+      background: rgba(212, 101, 74, 0.12);
+      padding: 0.1rem 0.35rem;
+    }
+
+    /* METHODS */
+    .methods {
+      background: var(--deep);
+      color: var(--foam);
+    }
+
+    .methods .kicker { color: var(--mint); }
+    .methods .section-lead { color: rgba(232, 244, 241, 0.55); }
+
+    .method-row {
+      display: grid;
+      gap: 0;
+      border-top: 1px solid rgba(232, 244, 241, 0.12);
+    }
+
+    .method {
+      display: grid;
+      grid-template-columns: 3rem 1fr;
+      gap: 1.25rem;
+      padding: 1.35rem 0;
+      border-bottom: 1px solid rgba(232, 244, 241, 0.12);
+      align-items: start;
+    }
+
+    .method-n {
+      font-family: "Instrument Serif", serif;
+      font-style: italic;
+      font-size: 1.4rem;
+      color: var(--coral);
+    }
+
+    .method h3 {
+      font-size: 1rem;
+      font-weight: 500;
+      margin-bottom: 0.35rem;
+    }
+
+    .method p {
+      font-size: 0.88rem;
+      font-weight: 300;
+      color: rgba(232, 244, 241, 0.55);
+      max-width: 50ch;
+    }
+
+    /* CONTACT */
+    .contact {
+      background: var(--foam);
+      text-align: center;
+    }
+
+    .contact .section-title {
+      max-width: none;
+      margin-inline: auto;
+    }
+
+    .contact .section-lead {
+      margin-inline: auto;
+    }
+
+    .contact-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.85rem;
+    }
+
+    .contact-links a {
+      padding: 0.85rem 1.4rem;
+      background: var(--deep);
+      color: var(--foam);
+      font-size: 0.8rem;
+      font-weight: 500;
+      transition: background 0.25s, transform 0.25s;
+    }
+
+    .contact-links a:hover {
+      background: var(--mid);
+      transform: translateY(-2px);
+    }
+
+    footer {
+      padding: 1.15rem var(--pad);
+      background: var(--sand);
+      border-top: 1px solid rgba(20, 34, 31, 0.08);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      color: var(--mute);
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.75s ease, transform 0.75s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(11, 46, 42, 0.88);
+      display: none;
+      place-items: center;
+      padding: 1.5rem;
+    }
+
+    .modal.open { display: grid; }
+
+    .modal-box {
+      background: var(--sand);
+      color: var(--ink);
+      max-width: 440px;
+      width: 100%;
+      padding: 1.75rem;
+      animation: lift 0.35s ease;
+    }
+
+    .modal-box h3 {
+      font-family: "Instrument Serif", serif;
+      font-size: 1.5rem;
+      margin-bottom: 0.65rem;
+    }
+
+    .modal-box p {
+      font-size: 0.9rem;
+      color: var(--mute);
+      font-weight: 300;
+      margin-bottom: 1.25rem;
+      line-height: 1.5;
+    }
+
+    .modal-box button {
+      background: var(--deep);
+      color: var(--foam);
+      border: none;
+      padding: 0.7rem 1.2rem;
+      font-family: "Sora", sans-serif;
+      font-size: 0.78rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="blobs" aria-hidden="true">
+    <div class="blob blob-a"></div>
+    <div class="blob blob-b"></div>
+  </div>
+
+  <div class="wrap">
+    <nav class="nav">
+      <a class="nav-brand" href="#top">MK · Evolab</a>
+      <div class="nav-links">
+        <a href="#research">Исследование</a>
+        <a href="#sims">Симуляции</a>
+        <a href="#contact">Контакт</a>
+      </div>
+    </nav>
+
+    <header class="hero" id="top">
+      <canvas class="hero-canvas" id="pop-canvas" aria-hidden="true"></canvas>
+      <div class="hero-content">
+        <p class="brand">Мария<br /><em>Ковалёва</em></p>
+        <h1>ML-инженер · моделирование эволюционных систем</h1>
+        <p class="hero-lead">Строю симуляции виртуальных популяций и анализирую, как отбор, дрейф и мутации складываются в устойчивые паттерны.</p>
+        <p class="thesis-chip">Дипломная работа: «Эволюционные процессы в виртуальных популяциях: анализ и моделирование»</p>
+        <div class="cta-row">
+          <a class="btn btn-fill" href="#sims">Смотреть симуляции</a>
+          <a class="btn btn-line" href="#contact">Написать</a>
+        </div>
+      </div>
+      <div class="hero-meta">
+        <span>Python · PyTorch · Agent-based models</span>
+        <span class="gen-counter">поколение <span id="gen">0</span></span>
+      </div>
+    </header>
+
+    <section class="research" id="research">
+      <div class="reveal">
+        <p class="kicker">Диплом</p>
+        <h2 class="section-title">Эволюция как вычислительный объект</h2>
+        <p class="section-lead">Исследую, как дискретные агенты в виртуальной среде порождают макроскопические закономерности — и какие метрики лучше всего их описывают.</p>
+      </div>
+      <div class="research-points reveal">
+        <div class="point">
+          <h3>Моделирование</h3>
+          <p>Агентные популяции с наследуемыми признаками, мутацией и отбором под давлением среды.</p>
+        </div>
+        <div class="point">
+          <h3>Анализ</h3>
+          <p>Траектории фитнеса, генетическое разнообразие, фиксация аллелей, фазовые переходы.</p>
+        </div>
+        <div class="point">
+          <h3>ML-слой</h3>
+          <p>Суррогатные модели для ускорения симуляций и предсказания режимов эволюции.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sims" id="sims">
+      <p class="kicker reveal">Портфолио</p>
+      <h2 class="section-title reveal">GIF-симуляции</h2>
+      <p class="section-lead reveal">Ниже — живые заглушки. Замените canvas на свои gif/mp4 анимации: добавьте класс <strong>has-gif</strong> на <code>.sim-stage</code> и раскомментируйте тег img.</p>
+
+      <div class="sim-grid">
+        <article class="sim-card featured reveal">
+          <div class="sim-stage" id="stage-1" data-sim="flock">
+            <span class="sim-badge">GIF · слот 01</span>
+            <div class="sim-placeholder"><canvas data-engine="flock"></canvas></div>
+            <div class="gif-slot">
+              <!-- <img src="sims/population-drift.gif" alt="Симуляция дрейфа популяции" /> -->
+            </div>
+            <div class="sim-overlay">
+              <span></span>
+              <span style="font-size:0.75rem;opacity:0.8">Клик — инструкция по вставке GIF</span>
+            </div>
+          </div>
+          <div class="sim-info">
+            <h3>Дрейф в виртуальной популяции</h3>
+            <p>Визуализация случайной фиксации признаков при конечном размере популяции.</p>
+            <p class="sim-hint">Вставка: <code>&lt;img src="sims/drift.gif"&gt;</code> + класс <code>has-gif</code> на stage</p>
+          </div>
+        </article>
+
+        <article class="sim-card reveal">
+          <div class="sim-stage" id="stage-2" data-sim="cells">
+            <span class="sim-badge">GIF · слот 02</span>
+            <div class="sim-placeholder"><canvas data-engine="cells"></canvas></div>
+            <div class="gif-slot">
+              <!-- <img src="sims/selection.gif" alt="Отбор по фитнесу" /> -->
+            </div>
+            <div class="sim-overlay">
+              <span></span>
+              <span style="font-size:0.75rem;opacity:0.8">Клик — как вставить анимацию</span>
+            </div>
+          </div>
+          <div class="sim-info">
+            <h3>Давление отбора</h3>
+            <p>Агенты с разным фитнесом конкурируют за ресурс.</p>
+            <p class="sim-hint">Файл: <code>sims/selection.gif</code></p>
+          </div>
+        </article>
+
+        <article class="sim-card reveal">
+          <div class="sim-stage" id="stage-3" data-sim="waves">
+            <span class="sim-badge">GIF · слот 03</span>
+            <div class="sim-placeholder"><canvas data-engine="waves"></canvas></div>
+            <div class="gif-slot">
+              <!-- <img src="sims/speciation.gif" alt="Специация в нишах" /> -->
+            </div>
+            <div class="sim-overlay">
+              <span></span>
+              <span style="font-size:0.75rem;opacity:0.8">Клик — подсказка</span>
+            </div>
+          </div>
+          <div class="sim-info">
+            <h3>Ниши и специация</h3>
+            <p>Разделение популяции по экологическим нишам во времени.</p>
+            <p class="sim-hint">Файл: <code>sims/speciation.gif</code></p>
+          </div>
+        </article>
+
+        <article class="sim-card reveal">
+          <div class="sim-stage" id="stage-4" data-sim="mutate">
+            <span class="sim-badge">GIF · слот 04</span>
+            <div class="sim-placeholder"><canvas data-engine="mutate"></canvas></div>
+            <div class="gif-slot">
+              <!-- <img src="sims/mutation-landscape.gif" alt="Мутационный ландшафт" /> -->
+            </div>
+            <div class="sim-overlay">
+              <span></span>
+              <span style="font-size:0.75rem;opacity:0.8">Клик — подсказка</span>
+            </div>
+          </div>
+          <div class="sim-info">
+            <h3>Мутационный ландшафт</h3>
+            <p>Исследование фитнес-ландшафта при варьировании частоты мутаций.</p>
+            <p class="sim-hint">Файл: <code>sims/mutation-landscape.gif</code></p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="methods" id="methods">
+      <p class="kicker reveal">Методы</p>
+      <h2 class="section-title reveal" style="color:var(--foam)">Стек и подход</h2>
+      <p class="section-lead reveal">От агентной модели до суррогата на нейросети.</p>
+      <div class="method-row">
+        <div class="method reveal">
+          <span class="method-n">01</span>
+          <div>
+            <h3>Agent-based simulation</h3>
+            <p>NumPy / Numba-ядра для пошаговой эволюции популяций с настраиваемыми правилами.</p>
+          </div>
+        </div>
+        <div class="method reveal">
+          <span class="method-n">02</span>
+          <div>
+            <h3>Статистический анализ</h3>
+            <p>Кривые разнообразия, время до фиксации, сравнение режимов отбора.</p>
+          </div>
+        </div>
+        <div class="method reveal">
+          <span class="method-n">03</span>
+          <div>
+            <h3>Суррогатные ML-модели</h3>
+            <p>PyTorch-модели для аппроксимации дорогих прогонов и поиска гиперпараметров.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact" id="contact">
+      <p class="kicker reveal">Контакт</p>
+      <h2 class="section-title reveal">Обсудим модель или коллаборацию</h2>
+      <p class="section-lead reveal">Открыта к вопросам по диплому, стажировкам и задачам на стыке ML и симуляций.</p>
+      <div class="contact-links reveal">
+        <a href="mailto:maria@example.com">maria@example.com</a>
+        <a href="https://github.com/" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://t.me/" target="_blank" rel="noopener">Telegram</a>
+      </div>
+    </section>
+
+    <footer>
+      <span>© <span id="year"></span> Мария Ковалёва</span>
+      <span>Эволюционные процессы в виртуальных популяциях</span>
+    </footer>
+  </div>
+
+  <div class="modal" id="modal" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <h3 id="modal-title">Вставка GIF</h3>
+      <p id="modal-text"></p>
+      <button type="button" id="modal-close">Понятно</button>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Scroll reveal
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add("visible");
+            io.unobserve(e.target);
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+    document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+
+    // Generation counter
+    const genEl = document.getElementById("gen");
+    let gen = 0;
+    setInterval(() => {
+      gen += 1;
+      genEl.textContent = gen.toLocaleString("ru-RU");
+    }, 1200);
+
+    // Hero particle population
+    (function initHeroPop() {
+      const canvas = document.getElementById("pop-canvas");
+      const ctx = canvas.getContext("2d");
+      let w, h, agents;
+
+      function resize() {
+        w = canvas.width = canvas.offsetWidth * devicePixelRatio;
+        h = canvas.height = canvas.offsetHeight * devicePixelRatio;
+        ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+        spawn();
+      }
+
+      function spawn() {
+        const n = Math.min(90, Math.floor((canvas.offsetWidth * canvas.offsetHeight) / 9000));
+        agents = Array.from({ length: n }, () => ({
+          x: Math.random() * canvas.offsetWidth,
+          y: Math.random() * canvas.offsetHeight,
+          vx: (Math.random() - 0.5) * 0.6,
+          vy: (Math.random() - 0.5) * 0.6,
+          r: 1.5 + Math.random() * 2.5,
+          hue: 150 + Math.random() * 40,
+          fit: Math.random(),
+        }));
+      }
+
+      function tick() {
+        ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
+        for (const a of agents) {
+          a.x += a.vx;
+          a.y += a.vy;
+          if (a.x < 0 || a.x > canvas.offsetWidth) a.vx *= -1;
+          if (a.y < 0 || a.y > canvas.offsetHeight) a.vy *= -1;
+          // soft attraction to fitness
+          a.vx += (Math.random() - 0.5) * 0.05;
+          a.vy += (Math.random() - 0.5) * 0.05;
+          const speed = Math.hypot(a.vx, a.vy) || 1;
+          a.vx = (a.vx / speed) * (0.35 + a.fit * 0.5);
+          a.vy = (a.vy / speed) * (0.35 + a.fit * 0.5);
+
+          ctx.beginPath();
+          ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2);
+          ctx.fillStyle = `hsla(${a.hue}, 45%, ${55 + a.fit * 20}%, 0.7)`;
+          ctx.fill();
+        }
+        // links
+        for (let i = 0; i < agents.length; i++) {
+          for (let j = i + 1; j < agents.length; j++) {
+            const dx = agents[i].x - agents[j].x;
+            const dy = agents[i].y - agents[j].y;
+            const d = Math.hypot(dx, dy);
+            if (d < 70) {
+              ctx.strokeStyle = `rgba(123, 196, 178, ${0.18 * (1 - d / 70)})`;
+              ctx.beginPath();
+              ctx.moveTo(agents[i].x, agents[i].y);
+              ctx.lineTo(agents[j].x, agents[j].y);
+              ctx.stroke();
+            }
+          }
+        }
+        requestAnimationFrame(tick);
+      }
+
+      window.addEventListener("resize", resize);
+      resize();
+      tick();
+    })();
+
+    // Mini sim engines for placeholders
+    function runEngine(canvas, type) {
+      const ctx = canvas.getContext("2d");
+      const parent = canvas.parentElement;
+      let w, h, t = 0, data;
+
+      function size() {
+        const rect = parent.getBoundingClientRect();
+        w = canvas.width = Math.max(1, Math.floor(rect.width * devicePixelRatio));
+        h = canvas.height = Math.max(1, Math.floor(rect.height * devicePixelRatio));
+        ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+        w = rect.width;
+        h = rect.height;
+        init();
+      }
+
+      function init() {
+        if (type === "flock") {
+          data = Array.from({ length: 55 }, () => ({
+            x: Math.random() * w,
+            y: Math.random() * h,
+            vx: (Math.random() - 0.5) * 1.2,
+            vy: (Math.random() - 0.5) * 1.2,
+            c: Math.random(),
+          }));
+        } else if (type === "cells") {
+          const cols = 24, rows = 14;
+          data = { cols, rows, grid: Array.from({ length: cols * rows }, () => Math.random() > 0.7 ? 1 : 0) };
+        } else if (type === "waves") {
+          data = { bands: 5 };
+        } else {
+          data = { peaks: Array.from({ length: 6 }, () => ({ x: Math.random(), y: Math.random(), h: 0.3 + Math.random() * 0.7 })) };
+        }
+      }
+
+      function frame() {
+        t += 0.016;
+        ctx.fillStyle = "#0b2e2a";
+        ctx.fillRect(0, 0, w, h);
+
+        if (type === "flock") {
+          for (const p of data) {
+            p.x += p.vx;
+            p.y += p.vy;
+            if (p.x < 0 || p.x > w) p.vx *= -1;
+            if (p.y < 0 || p.y > h) p.vy *= -1;
+            p.vx += Math.sin(t + p.c * 10) * 0.02;
+            p.vy += Math.cos(t + p.c * 8) * 0.02;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 2.5 + p.c * 2, 0, Math.PI * 2);
+            ctx.fillStyle = `hsla(${160 + p.c * 50}, 50%, 60%, 0.85)`;
+            ctx.fill();
+          }
+        } else if (type === "cells") {
+          const { cols, rows, grid } = data;
+          const cw = w / cols, rh = h / rows;
+          const next = grid.slice();
+          if (Math.floor(t * 8) % 2 === 0) {
+            for (let i = 0; i < grid.length; i++) {
+              const x = i % cols, y = (i / cols) | 0;
+              let n = 0;
+              for (let dy = -1; dy <= 1; dy++)
+                for (let dx = -1; dx <= 1; dx++) {
+                  if (!dx && !dy) continue;
+                  const nx = (x + dx + cols) % cols;
+                  const ny = (y + dy + rows) % rows;
+                  n += grid[ny * cols + nx];
+                }
+              next[i] = grid[i] ? (n === 2 || n === 3 ? 1 : 0) : n === 3 ? 1 : 0;
+            }
+            data.grid = next;
+          }
+          for (let i = 0; i < data.grid.length; i++) {
+            if (!data.grid[i]) continue;
+            const x = i % cols, y = (i / cols) | 0;
+            ctx.fillStyle = `hsla(${150 + (i % 40)}, 55%, ${50 + (i % 20)}%, 0.9)`;
+            ctx.fillRect(x * cw + 1, y * rh + 1, cw - 2, rh - 2);
+          }
+        } else if (type === "waves") {
+          for (let b = 0; b < data.bands; b++) {
+            ctx.beginPath();
+            for (let x = 0; x <= w; x += 4) {
+              const y = h * (0.25 + b * 0.12) + Math.sin(x * 0.02 + t * (0.8 + b * 0.2) + b) * (18 + b * 4);
+              if (x === 0) ctx.moveTo(x, y);
+              else ctx.lineTo(x, y);
+            }
+            ctx.strokeStyle = `hsla(${155 + b * 12}, 45%, 55%, 0.55)`;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+          }
+          for (let i = 0; i < 30; i++) {
+            const x = ((t * 20 + i * 47) % (w + 40)) - 20;
+            const y = h * 0.35 + Math.sin(i + t) * h * 0.25;
+            ctx.beginPath();
+            ctx.arc(x, y, 2, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(212, 101, 74, 0.7)";
+            ctx.fill();
+          }
+        } else {
+          const g = ctx.createRadialGradient(w * 0.5, h * 0.5, 10, w * 0.5, h * 0.5, w * 0.6);
+          g.addColorStop(0, "#145c54");
+          g.addColorStop(1, "#0b2e2a");
+          ctx.fillStyle = g;
+          ctx.fillRect(0, 0, w, h);
+          for (const p of data.peaks) {
+            const px = p.x * w + Math.sin(t + p.x * 5) * 12;
+            const py = p.y * h + Math.cos(t * 0.8 + p.y * 4) * 10;
+            const rad = 30 + p.h * 50 + Math.sin(t * 2 + p.h) * 8;
+            const rg = ctx.createRadialGradient(px, py, 0, px, py, rad);
+            rg.addColorStop(0, `rgba(123, 196, 178, ${0.55 * p.h})`);
+            rg.addColorStop(1, "rgba(123, 196, 178, 0)");
+            ctx.fillStyle = rg;
+            ctx.beginPath();
+            ctx.arc(px, py, rad, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+        requestAnimationFrame(frame);
+      }
+
+      const ro = new ResizeObserver(size);
+      ro.observe(parent);
+      size();
+      frame();
+    }
+
+    document.querySelectorAll("canvas[data-engine]").forEach((c) => {
+      runEngine(c, c.dataset.engine);
+    });
+
+    // Modal for GIF insert instructions
+    const modal = document.getElementById("modal");
+    const modalText = document.getElementById("modal-text");
+    const hints = {
+      flock: "Откройте index.html, найдите #stage-1. Раскомментируйте <img src=\"sims/population-drift.gif\"> и добавьте класс has-gif на div.sim-stage — canvas-заглушка скроется.",
+      cells: "Для слота отбора: положите GIF в sims/selection.gif, раскомментируйте img внутри #stage-2 и добавьте класс has-gif.",
+      waves: "Для специации: sims/speciation.gif → раскомментировать img в #stage-3 + класс has-gif на stage.",
+      mutate: "Для ландшафта: sims/mutation-landscape.gif → раскомментировать img в #stage-4 + класс has-gif.",
+    };
+
+    document.querySelectorAll(".sim-stage").forEach((stage) => {
+      stage.style.cursor = "pointer";
+      stage.addEventListener("click", () => {
+        modalText.textContent = hints[stage.dataset.sim] || "Вставьте свой GIF в .gif-slot и добавьте has-gif.";
+        modal.classList.add("open");
+      });
+    });
+
+    document.getElementById("modal-close").addEventListener("click", () => modal.classList.remove("open"));
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) modal.classList.remove("open");
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") modal.classList.remove("open");
+    });
+  </script>
+</body>
+</html>
