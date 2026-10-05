@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import shutil
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -257,6 +258,18 @@ def apply_manual_overrides(schedule: dict[str, list[dict]]) -> dict[str, list[di
     return sort_schedule(result)
 
 
+def cleanup_pycache(base: Path | None = None) -> None:
+    """Удаляет все папки __pycache__ в репозитории (или в base)."""
+    root = base or ROOT
+    caches = sorted(
+        (path for path in root.rglob("__pycache__") if path.is_dir()),
+        key=lambda path: len(path.parts),
+        reverse=True,
+    )
+    for cache_dir in caches:
+        shutil.rmtree(cache_dir, ignore_errors=True)
+
+
 def merge_schedules(existing: dict[str, list[dict]], new_data: dict[str, list[dict]]) -> dict[str, list[dict]]:
     merged = dict(existing)
     for day, lessons in new_data.items():
@@ -333,37 +346,40 @@ def main() -> int:
     input_path = Path(args.input)
     output_path = Path(args.output)
 
-    if not input_path.exists():
-        print(f"Ошибка: файл не найден: {input_path}", file=sys.stderr)
-        return 1
-
     try:
-        group = resolve_group_name(input_path, args.group)
-        parsed = parse_schedule(input_path, group)
-    except Exception as exc:
-        print(f"Ошибка парсинга: {exc}", file=sys.stderr)
-        return 1
+        if not input_path.exists():
+            print(f"Ошибка: файл не найден: {input_path}", file=sys.stderr)
+            return 1
 
-    if not parsed:
-        print("Предупреждение: в файле не найдено занятий для группы.", file=sys.stderr)
+        try:
+            group = resolve_group_name(input_path, args.group)
+            parsed = parse_schedule(input_path, group)
+        except Exception as exc:
+            print(f"Ошибка парсинга: {exc}", file=sys.stderr)
+            return 1
 
-    if args.merge:
-        schedule = merge_schedules(load_json(output_path), parsed)
-    else:
-        schedule = sort_schedule(parsed)
+        if not parsed:
+            print("Предупреждение: в файле не найдено занятий для группы.", file=sys.stderr)
 
-    print(f"Лист: {group}")
-    print(f"Новых/обновлённых дней: {len(parsed)}")
-    for day, lessons in parsed.items():
-        print(f"  {day}: {len(lessons)} занятий")
+        if args.merge:
+            schedule = merge_schedules(load_json(output_path), parsed)
+        else:
+            schedule = sort_schedule(parsed)
 
-    if args.dry_run:
-        print(json.dumps(schedule, ensure_ascii=False, indent=2))
+        print(f"Лист: {group}")
+        print(f"Новых/обновлённых дней: {len(parsed)}")
+        for day, lessons in parsed.items():
+            print(f"  {day}: {len(lessons)} занятий")
+
+        if args.dry_run:
+            print(json.dumps(schedule, ensure_ascii=False, indent=2))
+            return 0
+
+        save_json(output_path, schedule)
+        print(f"OK: Расписание сохранено: {output_path} ({len(schedule)} дней всего)")
         return 0
-
-    save_json(output_path, schedule)
-    print(f"OK: Расписание сохранено: {output_path} ({len(schedule)} дней всего)")
-    return 0
+    finally:
+        cleanup_pycache()
 
 
 if __name__ == "__main__":
