@@ -6,6 +6,10 @@
 
 :root {
   color-scheme: light;
+  --lesson-font: 13px;
+  --lesson-pad-y: 5px;
+  --lesson-pad-x: 7px;
+  --ui-compact: 0;
 }
 
 html {
@@ -18,77 +22,98 @@ body {
   font-family: Roboto, Arial, sans-serif;
   margin: 0;
   padding:
-    max(12px, env(safe-area-inset-top))
-    max(12px, env(safe-area-inset-right))
-    max(16px, env(safe-area-inset-bottom))
-    max(12px, env(safe-area-inset-left));
-  line-height: 1.45;
+    max(10px, env(safe-area-inset-top))
+    max(10px, env(safe-area-inset-right))
+    max(12px, env(safe-area-inset-bottom))
+    max(10px, env(safe-area-inset-left));
+  line-height: 1.25;
   color: #1a1a1a;
   background: #fafafa;
   -webkit-tap-highlight-color: transparent;
 }
 
 h1 {
-  margin: 0 0 0.35em;
-  font-size: clamp(1.25rem, 5vw, 1.85rem);
-  line-height: 1.2;
+  margin: 0 0 0.2em;
+  font-size: clamp(1.05rem, 2.4vw, 1.55rem);
+  line-height: 1.15;
 }
 
 h3 {
-  margin: 0 0 1rem;
-  font-size: clamp(0.82rem, 3.4vw, 1rem);
+  margin: 0 0 0.65rem;
+  font-size: clamp(0.72rem, 1.7vw, 0.92rem);
   font-weight: 500;
-  line-height: 1.4;
+  line-height: 1.3;
   color: #444;
 }
 
 .schedule-wrap {
   width: 100%;
-  overflow-x: auto;
+  overflow: auto;
   -webkit-overflow-scrolling: touch;
 }
 
 .schedule-table {
   width: 100%;
-  min-width: 640px;
+  table-layout: fixed;
   border-collapse: collapse;
   background: #fff;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
   border-radius: 8px;
   overflow: hidden;
+  font-size: var(--lesson-font);
 }
+
+.col-date { width: 17%; }
+.col-pair { width: 16%; }
+.col-kind { width: 7%; }
+.col-discipline { width: 33%; }
+.col-teacher { width: 16%; }
+.col-link { width: 11%; }
 
 th,
 td {
   border: 1px solid #ccc;
-  padding: 8px;
-  vertical-align: top;
+  padding: var(--lesson-pad-y) var(--lesson-pad-x);
+  vertical-align: middle;
+  white-space: nowrap;
+  line-height: 1.2;
 }
 
 th {
   text-align: center;
-  font-size: 0.8em;
+  font-size: 0.82em;
   background-color: #f0f0f0;
 }
 
 .cell-date {
-  white-space: nowrap;
   font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.date-short {
+  display: none;
+}
+
+.pair-num,
+.pair-time {
+  white-space: nowrap;
+}
+
+.cell-kind {
+  text-align: center;
+}
+
+.cell-discipline,
+.cell-teacher {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 0;
 }
 
 tr.lesson-row td {
   user-select: text;
   -webkit-user-select: text;
-}
-
-tr.lesson-row::before {
-  user-select: text;
-  -webkit-user-select: text;
-}
-
-tr.lesson-row td::before {
-  user-select: none;
-  -webkit-user-select: none;
 }
 
 tr.lesson-row.today {
@@ -112,25 +137,31 @@ tr.week-separator td {
   text-align: center;
   font-size: 1em;
   border: 2px solid #99c;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .day-group-start td {
   border-top: 2px solid #999 !important;
 }
 
-tr.lesson-row td[data-label="Ссылка"] {
+tr.lesson-row td.cell-link {
   text-align: center;
 }
 
 .lesson-link {
-  display: inline-block;
-  padding: 0.35em 0.75em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.18em 0.62em;
   border-radius: 999px;
   background: #eceff1;
   color: #37474f !important;
   border: 1px solid #cfd8dc;
   text-decoration: none;
   font-size: 0.85em;
+  font-weight: 500;
   white-space: nowrap;
   user-select: none;
   -webkit-user-select: none;
@@ -161,24 +192,24 @@ tr.lesson-row td[data-label="Ссылка"] {
 .controls {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.55rem;
-  margin: 1.25rem 0 1.5rem;
+  gap: 0.4rem;
+  margin: 0.55rem 0 0.7rem;
 }
 
 .controls label.control-btn {
-  flex: 1 1 calc(50% - 0.55rem);
-  min-height: 44px;
+  flex: 1 1 calc(50% - 0.4rem);
+  min-height: 34px;
   margin: 0;
-  padding: 0.65rem 0.75rem;
-  border-radius: 0.85rem;
+  padding: 0.4rem 0.55rem;
+  border-radius: 0.75rem;
   cursor: pointer;
   transition: box-shadow 0.15s ease, transform 0.1s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  font-size: clamp(0.78rem, 3.2vw, 0.95rem);
-  line-height: 1.2;
+  font-size: clamp(0.72rem, 2.2vw, 0.9rem);
+  line-height: 1.15;
 }
 
 .controls label.control-btn:active {
@@ -262,159 +293,156 @@ tr.lesson-row.active {
   font-weight: bold;
 }
 
+/* Эта неделя: ровно один экран, без прокрутки */
+html[data-view="week"],
+html[data-view="week"] body {
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+}
+
+html[data-view="week"] body {
+  display: flex;
+  flex-direction: column;
+}
+
+html[data-view="week"] h1 {
+  font-size: clamp(0.95rem, 2vw, 1.25rem);
+  margin-bottom: 0.08em;
+}
+
+html[data-view="week"] h3 {
+  margin-bottom: 0.35rem;
+  font-size: clamp(0.68rem, 1.5vw, 0.82rem);
+}
+
+html[data-view="week"] .controls {
+  margin: 0.3rem 0 0.4rem;
+  flex-wrap: nowrap;
+}
+
+html[data-view="week"] .controls label.control-btn {
+  flex: 1 1 0;
+  min-height: 30px;
+  padding: 0.28rem 0.35rem;
+  font-size: clamp(0.62rem, 1.5vw, 0.82rem);
+}
+
+html[data-view="week"] .schedule-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
 @media (min-width: 520px) {
   .controls label.control-btn {
-    flex: 0 1 auto;
+    flex: 1 1 auto;
   }
 }
 
-@media (min-width: 769px) {
+/* Ноутбук 1024+: одно занятие = одна строка */
+@media (min-width: 1024px) {
+  :root {
+    --lesson-font: 14px;
+    --lesson-pad-y: 6px;
+    --lesson-pad-x: 8px;
+  }
+
   body {
-    margin: 20px;
     padding:
-      max(20px, env(safe-area-inset-top))
-      max(20px, env(safe-area-inset-right))
-      max(20px, env(safe-area-inset-bottom))
-      max(20px, env(safe-area-inset-left));
+      max(14px, env(safe-area-inset-top))
+      max(16px, env(safe-area-inset-right))
+      max(14px, env(safe-area-inset-bottom))
+      max(16px, env(safe-area-inset-left));
+  }
+
+  .controls {
+    flex-wrap: nowrap;
   }
 
   .controls label.control-btn {
-    padding: 1em;
-    margin-right: 0;
+    flex: 0 1 auto;
+    min-height: 38px;
+    padding: 0.55rem 0.9rem;
   }
 }
 
-@media (max-width: 768px) {
-  .schedule-wrap {
-    overflow-x: visible;
-  }
-
-  .schedule-table {
-    min-width: 0;
-    background: transparent;
-    box-shadow: none;
-    border-radius: 0;
-  }
-
-  .schedule-table thead {
+/* Уже ноутбука, но ещё таблица в одну строку */
+@media (max-width: 1023px) {
+  .date-full {
     display: none;
   }
 
-  .schedule-table tbody {
-    display: block;
+  .date-short {
+    display: inline;
   }
 
-  tr.week-separator {
-    display: block;
-    margin: 1.1rem 0 0.65rem;
-  }
+  .col-date { width: 12%; }
+  .col-pair { width: 20%; }
+  .col-kind { width: 7%; }
+  .col-discipline { width: 34%; }
+  .col-teacher { width: 16%; }
+  .col-link { width: 11%; }
+}
 
-  tr.week-separator td {
-    display: block;
-    padding: 0.75rem 0.9rem;
-    font-size: 0.92rem;
-    border-radius: 10px;
-  }
-
-  tr.lesson-row {
-    display: block;
-    margin-bottom: 0.65rem;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.08);
-    border: 1px solid rgba(0, 0, 0, 0.08);
-  }
-
-  tr.lesson-row.day-group-start {
-    margin-top: 0.85rem;
-  }
-
-  tr.lesson-row::before {
-    content: attr(data-date);
-    display: block;
-    padding: 0.65rem 0.9rem;
-    font-weight: 700;
-    font-size: 0.92rem;
-    text-align: center;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-    background: rgba(255, 255, 255, 0.45);
-  }
-
-  tr.lesson-row td {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 0.75rem;
-    border: none;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-    padding: 0.65rem 0.9rem;
-    text-align: right;
-    font-size: 0.92rem;
-  }
-
-  tr.lesson-row td:last-child {
-    border-bottom: none;
-  }
-
-  tr.lesson-row td::before {
-    content: attr(data-label);
-    flex: 0 0 auto;
-    max-width: 42%;
-    font-weight: 600;
-    font-size: 0.78rem;
-    color: #555;
-    text-align: left;
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-  }
-
-  tr.lesson-row td.cell-date {
+/* Телефон 300+: тоже одна строка на занятие */
+@media (max-width: 699px) {
+  .pair-word {
     display: none;
   }
 
-  tr.lesson-row td[data-label="Дисциплина"] {
-    flex-direction: column;
-    align-items: stretch;
-    text-align: left;
-    font-weight: 600;
-    font-size: 0.98rem;
-    line-height: 1.35;
-    background: rgba(255, 255, 255, 0.25);
-  }
-
-  tr.lesson-row td[data-label="Дисциплина"]::before {
-    margin-bottom: 0.25rem;
-  }
-
-  tr.lesson-row td[data-label="Ссылка"] {
-    justify-content: center;
-    text-align: center;
-    padding-top: 0.5rem;
-    padding-bottom: 0.75rem;
-  }
-
-  tr.lesson-row td[data-label="Ссылка"]::before {
+  .col-kind,
+  th.col-kind,
+  td.cell-kind {
     display: none;
   }
+
+  .col-date { width: 16%; }
+  .col-pair { width: 24%; }
+  .col-discipline { width: 38%; }
+  .col-teacher { width: 14%; }
+  .col-link { width: 8%; }
 
   .lesson-link {
-    width: 100%;
-    text-align: center;
-    padding: 0.7rem 1rem;
-    font-size: 0.95rem;
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    padding: 0.12em 0.42em;
+    min-width: 0;
   }
 
-  .day-group-start td {
-    border-top: none !important;
+  .lesson-link-text {
+    font-size: 0;
+  }
+
+  .lesson-link-text::after {
+    content: "↗";
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  html[data-view="week"] .controls {
+    gap: 0.25rem;
+  }
+}
+
+@media (max-width: 479px) {
+  .col-teacher,
+  th.col-teacher,
+  td.cell-teacher {
+    display: none;
+  }
+
+  .col-date { width: 18%; }
+  .col-pair { width: 28%; }
+  .col-discipline { width: 42%; }
+  .col-link { width: 12%; }
+
+  .controls label.control-btn {
+    min-height: 32px;
+    padding: 0.32rem 0.4rem;
   }
 }
 
 @media (max-width: 360px) {
   .controls label.control-btn {
-    flex: 1 1 100%;
+    font-size: 0.68rem;
   }
 }

@@ -34,14 +34,22 @@
 
   <div class="schedule-wrap">
     <table class="schedule-table">
+    <colgroup>
+      <col class="col-date" />
+      <col class="col-pair" />
+      <col class="col-kind" />
+      <col class="col-discipline" />
+      <col class="col-teacher" />
+      <col class="col-link" />
+    </colgroup>
     <thead>
       <tr>
-        <th>Дни недели</th>
-        <th>Пара</th>
-        <th>Вид занятий</th>
-        <th>Дисциплина</th>
-        <th>Преподаватель</th>
-        <th>Ссылка</th>
+        <th class="col-date">День</th>
+        <th class="col-pair">Пара</th>
+        <th class="col-kind">Вид</th>
+        <th class="col-discipline">Дисциплина</th>
+        <th class="col-teacher">Преподаватель</th>
+        <th class="col-link">Ссылка</th>
       </tr>
     </thead>
     <tbody id="schedule-body"></tbody>

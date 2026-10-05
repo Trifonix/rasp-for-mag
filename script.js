@@ -184,6 +184,73 @@ function mergeSchedules(...schedules) {
   return sortScheduleByDate(result);
 }
 
+const WEEKDAY_SHORT = {
+  понедельник: "пн",
+  вторник: "вт",
+  среда: "ср",
+  четверг: "чт",
+  пятница: "пт",
+  суббота: "сб",
+  воскресенье: "вс",
+};
+
+function formatDateCell(day) {
+  const parts = String(day).trim().split(/\s+/);
+  const date = parts[0] || day;
+  const weekday = (parts.slice(1).join(" ") || "").toLowerCase();
+  const shortWd = WEEKDAY_SHORT[weekday] || weekday.slice(0, 2);
+  const shortDate = date.slice(0, 5);
+  return `<span class="date-full">${day}</span><span class="date-short">${shortDate} ${shortWd}</span>`;
+}
+
+function formatPairCell(pair) {
+  const match = String(pair).match(/(\d+)\s*пара\s*(.*)/i);
+  if (!match) return pair;
+  const time = match[2].replace(/-/g, "–");
+  return `<span class="pair-num">${match[1]}<span class="pair-word"> пара</span></span> <span class="pair-time">${time}</span>`;
+}
+
+function applyViewLayout(filter) {
+  document.documentElement.dataset.view = filter;
+  document.body.dataset.view = filter;
+  requestAnimationFrame(() => {
+    requestAnimationFrame(fitWeekToScreen);
+  });
+}
+
+function fitWeekToScreen() {
+  const root = document.documentElement;
+  const wrap = document.querySelector(".schedule-wrap");
+  if (!wrap) return;
+
+  if (root.dataset.view !== "week") {
+    wrap.style.height = "";
+    root.style.removeProperty("--lesson-font");
+    root.style.removeProperty("--lesson-pad-y");
+    root.style.removeProperty("--lesson-pad-x");
+    root.style.removeProperty("--ui-compact");
+    return;
+  }
+
+  const bottomPad = parseFloat(getComputedStyle(document.body).paddingBottom) || 0;
+  const avail = Math.max(120, window.innerHeight - wrap.getBoundingClientRect().top - bottomPad);
+  wrap.style.height = `${avail}px`;
+
+  root.style.setProperty("--ui-compact", "1");
+  let font = window.innerWidth >= 1024 ? 14 : window.innerWidth >= 700 ? 12 : 11;
+
+  for (let i = 0; i < 24; i += 1) {
+    root.style.setProperty("--lesson-font", `${font}px`);
+    root.style.setProperty("--lesson-pad-y", `${Math.max(1, font * 0.22)}px`);
+    root.style.setProperty("--lesson-pad-x", `${Math.max(3, font * 0.38)}px`);
+    const fitsHeight = wrap.scrollHeight <= avail + 1;
+    const fitsWidth = wrap.scrollWidth <= wrap.clientWidth + 1;
+    if (fitsHeight && fitsWidth) break;
+    font -= 0.4;
+    if (font < 8) break;
+  }
+}
+
 function renderTable(scheduleData, filter = "today") {
   tbody.innerHTML = "";
   const today = new Date();
@@ -239,25 +306,30 @@ function renderTable(scheduleData, filter = "today") {
       if (index === 0) tr.classList.add("day-group-start");
 
       const dateCell = index === 0
-        ? `<td class="cell-date" rowspan="${visibleItems.length}">${day}</td>`
+        ? `<td class="cell-date" rowspan="${visibleItems.length}">${formatDateCell(day)}</td>`
         : "";
 
+      const discipline = item["Дисциплина"] || "";
+      const teacher = item["Преподаватель"] || "";
+      const kind = item["Вид занятий"] || "";
+
       const linkHtml = item["Ссылка"]
-        ? `<a class="lesson-link" href="${item["Ссылка"]}" target="_blank" rel="noopener noreferrer">Открыть</a>`
+        ? `<a class="lesson-link" href="${item["Ссылка"]}" target="_blank" rel="noopener noreferrer"><span class="lesson-link-text">Открыть</span></a>`
         : "";
 
       tr.innerHTML = `
         ${dateCell}
-        <td data-label="Пара">${item["Пара"]}</td>
-        <td data-label="Вид">${item["Вид занятий"]}</td>
-        <td data-label="Дисциплина">${item["Дисциплина"]}</td>
-        <td data-label="Преподаватель">${item["Преподаватель"]}</td>
-        <td data-label="Ссылка">${linkHtml}</td>
+        <td class="cell-pair" data-label="Пара">${formatPairCell(item["Пара"])}</td>
+        <td class="cell-kind" data-label="Вид">${kind}</td>
+        <td class="cell-discipline" data-label="Дисциплина" title="${discipline}">${discipline}</td>
+        <td class="cell-teacher" data-label="Преподаватель" title="${teacher}">${teacher}</td>
+        <td class="cell-link" data-label="Ссылка">${linkHtml}</td>
       `;
       tbody.appendChild(tr);
     });
   }
   highlightCurrentLesson();
+  applyViewLayout(filter);
 }
 
 function highlightCurrentLesson() {
@@ -272,10 +344,10 @@ function highlightCurrentLesson() {
       return;
     }
 
-    const timeCell = Array.from(tr.children).find(td => /\d{2}:\d{2}-\d{2}:\d{2}/.test(td.textContent));
+    const timeCell = Array.from(tr.children).find(td => /\d{2}:\d{2}[-–]\d{2}:\d{2}/.test(td.textContent));
     if (!timeCell) return;
 
-    const match = timeCell.textContent.match(/(\d{2}:\d{2})-(\d{2}:\d{2})/);
+    const match = timeCell.textContent.match(/(\d{2}:\d{2})[-–](\d{2}:\d{2})/);
     if (match) {
       const [_, start, end] = match;
       const [sH, sM] = start.split(":").map(Number);
@@ -313,3 +385,12 @@ document.querySelectorAll('input[name="view"]').forEach((radio) => {
 });
 
 setInterval(highlightCurrentLesson, 30000);
+
+let fitWeekTimer = 0;
+window.addEventListener("resize", () => {
+  window.clearTimeout(fitWeekTimer);
+  fitWeekTimer = window.setTimeout(fitWeekToScreen, 80);
+});
+window.addEventListener("orientationchange", () => {
+  window.setTimeout(fitWeekToScreen, 160);
+});
