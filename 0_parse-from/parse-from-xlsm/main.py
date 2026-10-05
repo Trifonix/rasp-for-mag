@@ -19,7 +19,7 @@ from pathlib import Path
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_INPUT = ROOT / "0_parse-from" / "2026-09-25" / "2026-09-25.xlsm"
+DEFAULT_INPUT = ROOT / "0_parse-from" / "2026-10-05" / "2026-10-05.xlsm"
 DEFAULT_OUTPUT = ROOT / "schedule3.json"
 DEFAULT_GROUP = "12-25РПм"
 HEADER_ROW = 10
@@ -238,11 +238,30 @@ def sort_schedule(schedule: dict[str, list[dict]]) -> dict[str, list[dict]]:
     return {key: schedule[key] for key in sorted_keys}
 
 
+# Фактические переносы, которых нет в вузовском Excel.
+# Библиодень: пары пятницы 02.10.2026 прошли в среду 30.09.2026.
+MANUAL_DAY_MOVES = (
+    ("02.10.2026 пятница", "30.09.2026 среда"),
+)
+
+
+def apply_manual_overrides(schedule: dict[str, list[dict]]) -> dict[str, list[dict]]:
+    result = dict(schedule)
+    for src, dst in MANUAL_DAY_MOVES:
+        if src not in result:
+            continue
+        if dst not in result:
+            result[dst] = result[src]
+        del result[src]
+        print(f"  учтён ручной перенос: {src} -> {dst}")
+    return sort_schedule(result)
+
+
 def merge_schedules(existing: dict[str, list[dict]], new_data: dict[str, list[dict]]) -> dict[str, list[dict]]:
     merged = dict(existing)
     for day, lessons in new_data.items():
         merged[day] = lessons
-    return sort_schedule(merged)
+    return apply_manual_overrides(sort_schedule(merged))
 
 
 def load_json(path: Path) -> dict[str, list[dict]]:

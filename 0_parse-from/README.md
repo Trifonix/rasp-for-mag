@@ -34,7 +34,7 @@ git push
 ## Только парсер (без архива)
 
 ```bash
-python 0_parse-from/parse-from-xlsm/main.py "0_parse-from/2026-09-25/2026-09-25.xlsm" --merge
+python 0_parse-from/parse-from-xlsm/main.py "0_parse-from/2026-10-05/2026-10-05.xlsm" --merge
 ```
 
 | Параметр | Описание |
